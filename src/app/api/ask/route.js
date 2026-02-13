@@ -24,10 +24,7 @@ export async function POST(request) {
             queryId: Date.now().toString() // Simple ID for frontend
         });
 
-        return NextResponse.json({
-            answer: aiAnswer,
-            queryId
-        });
+
 
     } catch (error) {
         console.error('API Error /api/ask:', error);
