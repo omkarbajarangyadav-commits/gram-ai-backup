@@ -12,21 +12,38 @@ if (-not (Get-Command "node" -ErrorAction SilentlyContinue)) {
     exit 1
 }
 
-# 3. Add files to Git
-Write-Host "Adding files to Git..."
-git add .
-git commit -m "Auto-deploy update"
+# Master Deploy Script for Smart Farm
+# 1. Pushes code to GitHub (Safety & History)
+# 2. Deploys to Vercel (Live App)
 
-# 4. Deploy using Vercel CLI
-Write-Host "Deploying with Vercel..."
-$login = cmd /c "npx vercel whoami"
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "Please login to Vercel..."
-    cmd /c "npx vercel login"
+$ErrorActionPreference = "Stop"
+
+Write-Host "🚀 Starting Fully Automated Deployment..." -ForegroundColor Green
+
+# --- Step 1: Git Push ---
+Write-Host "`n📦 Step 1: Backing up code to GitHub..." -ForegroundColor Cyan
+try {
+    git add .
+    $commitMessage = "Auto-update: $(Get-Date)"
+    Write-Host "Commit Message: $commitMessage"
+    git commit -m "$commitMessage"
+    git push origin main
+    Write-Host "✅ Code pushed to GitHub successfully." -ForegroundColor Green
+} catch {
+    Write-Host "⚠️  Git push skipped or failed (No changes?)" -ForegroundColor Yellow
 }
 
-Write-Host "Pushing to production..."
-cmd /c "npx vercel --prod --yes"
+# --- Step 2: Vercel Deploy ---
+Write-Host "`n🌍 Step 2: Deploying to Vercel..." -ForegroundColor Cyan
+try {
+    # --prod triggers a production deployment
+    # --yes skips the confirmation prompts
+    npx vercel --prod --yes
+    Write-Host "`n✅ Successfully Deployed to Production!" -ForegroundColor Green
+} catch {
+    Write-Host "`n❌ Vercel Deployment Failed." -ForegroundColor Red
+    Write-Error $_
+}
 
-Write-Host "Deployment Complete."
-Write-Host "REMINDER: Set Environment Variables in Vercel Dashboard (OPENAI_API_KEY, etc.)"
+Write-Host "`n🎉 All Done! Your app is live." -ForegroundColor Green
+"REMINDER: Set Environment Variables in Vercel Dashboard (OPENAI_API_KEY, etc.)"

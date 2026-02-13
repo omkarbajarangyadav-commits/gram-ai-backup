@@ -1,158 +1,78 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Phone, ArrowRight, Lock } from 'lucide-react';
+import { ArrowRight, Phone } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function Login() {
+    const [mobile, setMobile] = useState('');
     const router = useRouter();
-    const [step, setStep] = useState(1); // 1: Phone, 2: OTP
-    const [phone, setPhone] = useState('');
-    const [otp, setOtp] = useState('');
-    const [loading, setLoading] = useState(false);
 
-    const handlePhoneSubmit = (e) => {
+    const handleLogin = (e) => {
         e.preventDefault();
-        if (phone.length < 10) return;
-        setLoading(true);
-        // Simulate API call
-        setTimeout(() => {
-            setLoading(false);
-            setStep(2);
-        }, 1500);
-    };
-
-    const handleOtpSubmit = (e) => {
-        e.preventDefault();
-        if (otp.length < 4) return;
-        setLoading(true);
-        // Simulate verification
-        setTimeout(() => {
-            setLoading(false);
-            router.push('/');
-        }, 1500);
+        // In a real app, send OTP here.
+        // For now, redirect to Onboarding
+        router.push('/onboarding');
     };
 
     return (
-        <main style={{
-            minHeight: '100vh',
-            background: 'linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '20px'
-        }}>
-            <div className="card" style={{
-                width: '100%',
-                maxWidth: '400px',
-                padding: '32px',
-                borderRadius: '24px',
-                boxShadow: '0 10px 40px rgba(46, 125, 50, 0.15)',
-                background: 'white'
-            }}>
-                {/* Logo/Branding */}
-                <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-                    <div style={{
-                        width: '64px',
-                        height: '64px',
-                        background: '#2E7D32',
-                        borderRadius: '50%',
-                        margin: '0 auto 16px auto',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '32px'
-                    }}>
-                        🌱
+        <main className="min-h-screen bg-white flex flex-col items-center justify-center p-6 relative overflow-hidden">
+
+            {/* Background decoration */}
+            <div className="absolute top-0 left-0 w-full h-1/2 bg-green-50 rounded-b-[3rem] -z-10"></div>
+            <div className="absolute top-10 right-10 w-32 h-32 bg-green-100 rounded-full blur-3xl opacity-50"></div>
+            <div className="absolute bottom-10 left-10 w-40 h-40 bg-blue-50 rounded-full blur-3xl opacity-50"></div>
+
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="w-full max-w-sm"
+            >
+                <div className="mb-10 text-center">
+                    <div className="w-20 h-20 bg-green-600 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg shadow-green-200">
+                        <span className="text-4xl">🌱</span>
                     </div>
-                    <h1 className="text-green" style={{ margin: 0 }}>Smart Farm</h1>
-                    <p style={{ fontSize: '14px', color: '#757575' }}>Your Smart Farming Assistant</p>
+                    <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">Smart Farm</h1>
+                    <p className="text-slate-500 mt-2 font-medium">Your Digital Farming Assistant</p>
                 </div>
 
-                {step === 1 ? (
-                    <form onSubmit={handlePhoneSubmit}>
-                        <div className="mb-4">
-                            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '8px', color: '#555' }}>Mobile Number</label>
-                            <div style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                background: '#F5F5F5',
-                                borderRadius: '12px',
-                                padding: '12px',
-                                border: '1px solid #E0E0E0'
-                            }}>
-                                <span style={{ color: '#757575', marginRight: '12px', fontWeight: '600' }}>+91</span>
+                <div className="bg-white p-8 rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-50">
+                    <h2 className="text-xl font-bold text-slate-800 mb-6">Welcome Back!</h2>
+
+                    <form onSubmit={handleLogin} className="space-y-5">
+                        <div className="space-y-2">
+                            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Mobile Number</label>
+                            <div className="relative">
+                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold flex items-center gap-2 border-r border-slate-200 pr-2">
+                                    <Phone size={16} />
+                                    <span>+91</span>
+                                </div>
                                 <input
-                                    type="text"
-                                    value={phone}
-                                    onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                                    type="tel"
+                                    value={mobile}
+                                    onChange={(e) => setMobile(e.target.value)}
+                                    className="w-full bg-slate-50 border border-slate-100 rounded-xl py-4 pl-24 pr-4 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all"
                                     placeholder="98765 43210"
-                                    style={{ border: 'none', background: 'transparent', width: '100%', outline: 'none', height: "2rem", fontSize: '16px', fontWeight: '500' }}
-                                    inputMode="numeric"
+                                    maxLength={10}
+                                    required
                                 />
-                                <Phone size={18} color="#9E9E9E" />
                             </div>
                         </div>
 
                         <button
-                            className="btn btn-primary"
                             type="submit"
-                            disabled={phone.length < 10 || loading}
-                            style={{ marginTop: '24px', opacity: (phone.length < 10 || loading) ? 0.7 : 1 }}
+                            className="w-full bg-green-600 text-white py-4 rounded-xl font-bold shadow-lg shadow-green-200 flex items-center justify-center gap-2 hover:bg-green-700 active:scale-95 transition-all"
                         >
-                            {loading ? 'Sending OTP...' : 'Get OTP'}
-                            {!loading && <ArrowRight size={18} />}
+                            <span>Get OTP</span>
+                            <ArrowRight size={20} />
                         </button>
                     </form>
-                ) : (
-                    <form onSubmit={handleOtpSubmit}>
-                        <div className="mb-4">
-                            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '8px', color: '#555' }}>Enter OTP</label>
-                            <div style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                background: '#F5F5F5',
-                                borderRadius: '12px',
-                                padding: '12px',
-                                border: '1px solid #E0E0E0'
-                            }}>
-                                <input
-                                    type="text"
-                                    value={otp}
-                                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                                    placeholder="• • • •"
-                                    style={{
-                                        border: 'none',
-                                        background: 'transparent',
-                                        width: '100%',
-                                        outline: 'none',
-                                        fontSize: '24px',
-                                        fontWeight: '600',
-                                        letterSpacing: '8px',
-                                        textAlign: 'center'
-                                    }}
-                                    inputMode="numeric"
-                                    autoFocus
-                                />
-                                <Lock size={18} color="#9E9E9E" />
-                            </div>
-                            <p style={{ fontSize: '12px', textAlign: 'center', marginTop: '12px', color: '#757575' }}>
-                                Sent to +91 {phone} <br />
-                                <span style={{ color: '#2E7D32', fontWeight: '600', cursor: 'pointer' }} onClick={() => setStep(1)}>Edit Number</span>
-                            </p>
-                        </div>
 
-                        <button
-                            className="btn btn-primary"
-                            type="submit"
-                            disabled={otp.length < 4 || loading}
-                            style={{ marginTop: '24px', opacity: (otp.length < 4 || loading) ? 0.7 : 1 }}
-                        >
-                            {loading ? 'Verifying...' : 'Login'}
-                            {!loading && <ArrowRight size={18} />}
-                        </button>
-                    </form>
-                )}
-            </div>
+                    <div className="mt-6 text-center">
+                        <p className="text-xs text-slate-400">By continuing, you agree to our Terms & Privacy Policy.</p>
+                    </div>
+                </div>
+            </motion.div>
         </main>
     );
 }
