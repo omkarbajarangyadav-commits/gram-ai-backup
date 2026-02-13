@@ -107,11 +107,15 @@ export default function AssistantLink() {
                     <p className="text-xs text-slate-500">AI Agriculture Expert</p>
                 </div>
                 <button
-                    onClick={() => setLanguage(l => l === 'hi-IN' ? 'mr-IN' : 'hi-IN')}
+                    onClick={() => setLanguage(l => {
+                        if (l === 'hi-IN') return 'mr-IN';
+                        if (l === 'mr-IN') return 'hi-en';
+                        return 'hi-IN';
+                    })}
                     className="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full text-xs font-semibold text-slate-600 border border-slate-200 active:scale-95 transition-transform"
                 >
                     <Globe size={14} />
-                    {language === 'hi-IN' ? 'Hindi' : 'Marathi'}
+                    {language === 'hi-IN' ? 'Hindi' : (language === 'mr-IN' ? 'Marathi' : 'Hinglish')}
                 </button>
             </div>
 

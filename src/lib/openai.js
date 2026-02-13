@@ -9,35 +9,63 @@ if (apiKey && !apiKey.includes('your-openai-api-key')) {
     });
 }
 
-// Mock Responses for Demo Mode
+// Mock Responses for Demo Mode (Expanded for "Hinglish" / Romanized inputs)
 const MOCK_RESPONSES = {
     'hi-IN': {
-        default: "नमस्ते! मी तुमचा ग्राम गुरु आहे. (Demo Mode: OpenAI Key not found). खऱ्या उत्तरांसाठी कृपया API Key जोडा. तोपर्यंत मी तुम्हाला मूलभूत माहिती देऊ शकतो.",
+        default: "नमस्ते! (Demo Mode). खऱ्या उत्तरांसाठी API Key जोडा. \nमी 'सोयाबीन', 'कापूस', 'हवामान', 'बाजार भाव' याबद्दल माहिती देऊ शकतो.",
         keywords: {
-            'नमस्ते': "राम राम! कसे आहात आपण?",
-            'हवामान': "आजचे हवामान कोरडे राहील. पाऊस पडण्याची शक्यता कमी आहे.",
-            'सोयाबीन': "सोयाबीनसाठी हे महत्वाचे: \n- वेळोवेळी तण काढणे आवश्यक आहे.\n- 15 दिवसांनी निंबोळी अर्काची फवारणी करा.",
-            'कापूस': "कापूस पिकावर बोंडअळीचा प्रादुर्भाव होऊ शकतो. कामगंध सापळे वापरा.",
-            'खत': "शेणखत आणि गांडूळ खत जमिनीचा पोत सुधारण्यासाठी उत्तम आहेत."
+            'नमस्ते': "राम राम! कसे आहात?",
+            'hello': "नमस्ते! मी स्मार्ट फार्म असिस्टंट आहे.",
+            'weather': "आजचे हवामान कोरडे राहील. (28°C).",
+            'havaman': "आजचे हवामान कोरडे राहील. (28°C).",
+            'हवामान': "आजचे हवामान कोरडे राहील. (28°C).",
+            'soyabean': "सोयाबीन टीप: \n- 15 दिवसांनी निंबोळी अर्काची फवारणी करा.\n- तण काढणे आवश्यक आहे.",
+            'soya': "सोयाबीन पिकासाठी ओलावा टिकवून ठेवणे गरजेचे आहे.",
+            'सोयाबीन': "सोयाबीन टीप: \n- 15 दिवसांनी निंबोळी अर्काची फवारणी करा.",
+            'cotton': "कापूस पिकावर बोंडअळीचा प्रादुर्भाव होऊ शकतो. कामगंध सापळे वापरा.",
+            'kapus': "कापूस पिकावर बोंडअळीचा प्रादुर्भाव होऊ शकतो. कामगंध सापळे वापरा.",
+            'कापूस': "कापूस पिकावर बोंडअळीचा प्रादुर्भाव होऊ शकतो.",
+            'khad': "सेंद्रिय खत (शेणखत) सर्वोत्तम आहे.",
+            'fertilizer': "सेंद्रिय खत (शेणखत) सर्वोत्तम आहे.",
+            'market': "आजचे बाजार भाव:\n- सोयाबीन: ₹4,800\n- कापूस: ₹6,950",
+            'bhav': "आजचे बाजार भाव:\n- सोयाबीन: ₹4,800\n- कापूस: ₹6,950"
         }
     },
-    'mr-IN': {
-        default: "नमस्कार! मी आपला ग्राम गुरु (डेमो मोड). कृपया अचूक माहितीसाठी API Key सेट करा.",
+    'hi-en': {
+        default: "Namaste! (Demo Mode). Main 'Soyabean', 'Cotton', 'Weather', 'Market rate' ke baare mein bata sakta hoon.",
         keywords: {
-            'नमस्कार': "राम राम मंडळी! बोला, काय मदत करू?",
-            'पाऊस': "पुढील २ दिवस पावसाची शक्यता नाही. पेरणीसाठी ही योग्य वेळ आहे.",
-            'खत': "जमिनीची सुपीकता वाढवण्यासाठी सेंद्रिय खतांचा वापर करा.",
-            'कीड': "कीड नियंत्रणासाठी निंबोळी अर्क ५% फवारणी करा."
+            'namaste': "Ram Ram! Kaise ho aap?",
+            'hello': "Namaste! Main aapka Krushi Mitra hoon.",
+            'weather': "Aaj mausam saaf rahega. (28°C).",
+            'mausam': "Aaj mausam saaf rahega. (28°C).",
+            'barish': "Agale 2 din baarish ki sambhavna nahi hai.",
+            'rain': "Agale 2 din baarish ki sambhavna nahi hai.",
+            'soyabean': "Soyabean tips:\n- 15 din baad Nimboli ark ka spray karein.\n- Tan (weeds) nikalna zaroori hai.",
+            'soya': "Soyabean ke liye nami (moisture) zaroori hai.",
+            'cotton': "Cotton (Kapas) me pink bollworm ka khatra ho sakta hai. Pheromone traps lagayein.",
+            'kapas': "Cotton (Kapas) me pink bollworm ka khatra ho sakta hai. Pheromone traps lagayein.",
+            'fertilizer': "Organic khad (Cow dung) sabse best hai.",
+            'khad': "Organic khad (Cow dung) sabse best hai.",
+            'market': "Aaj ke Market Rates:\n- Soyabean: ₹4,800\n- Cotton: ₹6,950",
+            'bhav': "Aaj ke Market Rates:\n- Soyabean: ₹4,800\n- Cotton: ₹6,950",
+            'rate': "Aaj ke Market Rates:\n- Soyabean: ₹4,800\n- Cotton: ₹6,950"
         }
     }
 };
 
 function getMockResponse(prompt, language) {
-    const langData = MOCK_RESPONSES[language] || MOCK_RESPONSES['hi-IN'];
+    const lowerPrompt = prompt.toLowerCase();
 
-    // Simple keyword matching
+    // Determine language key
+    let langKey = 'hi-IN'; // Default
+    if (language === 'mr-IN') langKey = 'mr-IN';
+    if (language === 'hi-en') langKey = 'hi-en';
+
+    const langData = MOCK_RESPONSES[langKey];
+
+    // Check keywords
     for (const [key, value] of Object.entries(langData.keywords)) {
-        if (prompt.includes(key)) return value;
+        if (lowerPrompt.includes(key)) return value;
     }
 
     return langData.default;
@@ -47,8 +75,7 @@ export async function generateAIResponse(prompt, language = 'hi-IN') {
     // 1. If No API Key -> Use Mock Mode
     if (!openai) {
         console.warn("OpenAI API Key missing. Using Mock Mode.");
-        // Simulate network delay for realism
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        await new Promise(resolve => setTimeout(resolve, 1000)); // 1s delay for realism
         return getMockResponse(prompt, language);
     }
 
@@ -56,7 +83,7 @@ export async function generateAIResponse(prompt, language = 'hi-IN') {
     try {
         const systemInstruction = `
         You are "Gram Guru", a friendly agricultural advisor.
-        - Language: ${language === 'mr-IN' ? 'Marathi' : 'Hindi'}.
+        - Language: ${language === 'mr-IN' ? 'Marathi' : (language === 'hi-en' ? 'Hinglish' : 'Hindi')}.
         - Role: Village Elder / Agri Expert.
         - Rules: Concise, bullet points, organic first.
         `;
@@ -74,8 +101,6 @@ export async function generateAIResponse(prompt, language = 'hi-IN') {
         return completion.choices[0].message.content;
     } catch (error) {
         console.error('OpenAI Error:', error);
-        return language === 'mr-IN'
-            ? 'क्षमा करा, मला संपर्क साधता आला नाही. पुन्हा प्रयत्न करा.'
-            : 'माफ़ क्षमा करें, संपर्क स्थापित नहीं हो सका। कृपया पुनः प्रयास करें।';
+        return getMockResponse(prompt, language); // Fallback to mock on error
     }
 }

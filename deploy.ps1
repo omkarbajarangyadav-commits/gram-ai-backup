@@ -26,7 +26,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "Pushing to production..."
-cmd /c "npx vercel --prod"
+cmd /c "npx vercel --prod --yes"
 
 Write-Host "Deployment Complete."
 Write-Host "REMINDER: Set Environment Variables in Vercel Dashboard (OPENAI_API_KEY, etc.)"
