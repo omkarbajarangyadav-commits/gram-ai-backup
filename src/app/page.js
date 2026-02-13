@@ -16,8 +16,12 @@ export default function Home() {
   // 1. Check Auth / Onboarding
   useEffect(() => {
     const lang = localStorage.getItem('language');
+    const role = localStorage.getItem('role');
+
     if (!lang) {
       router.push('/login');
+    } else if (!role) {
+      router.push('/role');
     } else {
       setCheckingAuth(false);
     }

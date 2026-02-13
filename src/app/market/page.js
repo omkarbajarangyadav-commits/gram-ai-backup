@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
-import { TrendingUp, TrendingDown, MapPin, DollarSign, Filter } from 'lucide-react';
+import { TrendingUp, TrendingDown, MapPin, Filter, ShoppingBag, Store } from 'lucide-react';
+import BottomNav from '@/components/BottomNav';
 
 // Pan-India Mock Data (Simulating an API)
 const ALL_INDIA_DATA = {
@@ -48,9 +49,16 @@ const ALL_INDIA_DATA = {
     }
 };
 
+const SHOPS_DATA = [
+    { name: 'Kisan Agro Center', type: 'Fertilizers', location: 'Pune', phone: '9876543210' },
+    { name: 'Samarth Seeds', type: 'Seeds', location: 'Pune', phone: '9123456789' },
+    { name: 'Laxmi Krishi Kendra', type: 'Tools', location: 'Solapur', phone: '9988776655' }
+];
+
 export default function Market() {
     const [selectedState, setSelectedState] = useState('Maharashtra');
     const [selectedDistrict, setSelectedDistrict] = useState('All');
+    const [activeTab, setActiveTab] = useState('rates'); // 'rates' or 'shops'
 
     // Get available districts for selected state
     const districts = ALL_INDIA_DATA[selectedState] ? Object.keys(ALL_INDIA_DATA[selectedState]) : [];
@@ -67,91 +75,141 @@ export default function Market() {
     }
 
     return (
-        <main style={{ paddingBottom: '80px' }}>
-            <div className="header">
-                <h2 className="text-green">Market Pulse</h2>
-                <p>Live Prices • Pan-India</p>
+        <main className="pb-24 bg-slate-50 min-h-screen">
+            {/* Header */}
+            <div className="bg-white p-6 rounded-b-[2rem] shadow-sm sticky top-0 z-10">
+                <div className="flex justify-between items-center mb-4">
+                    <div>
+                        <h2 className="text-2xl font-extrabold text-green-700">Market Pulse</h2>
+                        <p className="text-sm text-slate-500 font-medium">Live Prices & Local Shops</p>
+                    </div>
+                    <div className="bg-green-50 p-2 rounded-full">
+                        <ShoppingBag className="text-green-600" size={24} />
+                    </div>
+                </div>
+
+                {/* Tabs */}
+                <div className="flex bg-slate-100 p-1 rounded-xl">
+                    <button
+                        onClick={() => setActiveTab('rates')}
+                        className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all ${activeTab === 'rates' ? 'bg-white shadow-sm text-slate-800' : 'text-slate-400 hover:text-slate-600'}`}
+                    >
+                        Mandi Rates
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('shops')}
+                        className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all ${activeTab === 'shops' ? 'bg-white shadow-sm text-slate-800' : 'text-slate-400 hover:text-slate-600'}`}
+                    >
+                        Agri-Shops
+                    </button>
+                </div>
             </div>
 
-            <div style={{ padding: '0 20px' }}>
-
-                {/* Location Filter */}
-                <div className="card mb-4" style={{ background: '#FAFAFA' }}>
-                    <div className="flex-between mb-2">
-                        <span style={{ fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <Filter size={16} /> Select Location
-                        </span>
-                    </div>
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                        <select
-                            value={selectedState}
-                            onChange={(e) => { setSelectedState(e.target.value); setSelectedDistrict('All'); }}
-                            style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid #ddd' }}
-                        >
-                            {Object.keys(ALL_INDIA_DATA).map(s => <option key={s} value={s}>{s}</option>)}
-                        </select>
-
-                        <select
-                            value={selectedDistrict}
-                            onChange={(e) => setSelectedDistrict(e.target.value)}
-                            style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid #ddd' }}
-                        >
-                            <option value="All">All Districts</option>
-                            {districts.map(d => <option key={d} value={d}>{d}</option>)}
-                        </select>
-                    </div>
-                </div>
-
-                {/* Income Prediction (Context aware?) */}
-                <div className="card" style={{ background: 'linear-gradient(135deg, #F57C00 0%, #E65100 100%)', color: 'white' }}>
-                    <h3 style={{ color: 'white', opacity: 0.9, fontSize: '16px' }}>Estimated Revenue</h3>
-                    <h1 style={{ color: 'white', marginBottom: '8px' }}>₹1,45,000</h1>
-                    <div className="flex-between">
-                        <span style={{ fontSize: '12px', opacity: 0.9 }}>Avg. for {selectedState}</span>
-                        <span style={{ background: 'rgba(255,255,255,0.2)', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: '600' }}>+12% Trend</span>
-                    </div>
-                </div>
-
-                <h3 className="mb-4">Mandi Rates ({selectedDistrict === 'All' ? selectedState : selectedDistrict})</h3>
-
-                {displayData.length > 0 ? (
-                    displayData.map((item, i) => (
-                        <div key={i} className="card flex-between">
-                            <div className="flex-col">
-                                <span style={{ fontWeight: '700', fontSize: '18px' }}>{item.crop}</span>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: '#757575', marginTop: '4px' }}>
-                                    <MapPin size={12} /> {item.location}
-                                </div>
+            <div className="p-5 space-y-4">
+                {activeTab === 'rates' ? (
+                    <>
+                        {/* Location Filter */}
+                        <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                            <div className="flex items-center gap-2 mb-3 text-slate-700 font-bold text-sm uppercase tracking-wide">
+                                <Filter size={14} /> Select Location
                             </div>
-                            <div className="flex-col" style={{ alignItems: 'flex-end' }}>
-                                <span style={{ fontWeight: '700', fontSize: '18px', color: item.trend === 'up' ? '#2E7D32' : item.trend === 'down' ? '#D32F2F' : '#F57C00' }}>
-                                    {item.price}
-                                    <span style={{ fontSize: '12px', color: '#757575' }}> /qt</span>
-                                </span>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', marginTop: '4px', color: item.trend === 'up' ? '#2E7D32' : item.trend === 'down' ? '#D32F2F' : '#F57C00' }}>
-                                    {item.trend === 'up' ? <TrendingUp size={14} /> : item.trend === 'down' ? <TrendingDown size={14} /> : '➖'}
-                                    {item.trend === 'up' ? 'Rising' : item.trend === 'down' ? 'Falling' : 'Stable'}
-                                </div>
+                            <div className="flex gap-2">
+                                <select
+                                    value={selectedState}
+                                    onChange={(e) => { setSelectedState(e.target.value); setSelectedDistrict('All'); }}
+                                    className="flex-1 bg-slate-50 p-3 rounded-xl border border-slate-100 font-semibold text-slate-700 text-sm outline-none"
+                                >
+                                    {Object.keys(ALL_INDIA_DATA).map(s => <option key={s} value={s}>{s}</option>)}
+                                </select>
+
+                                <select
+                                    value={selectedDistrict}
+                                    onChange={(e) => setSelectedDistrict(e.target.value)}
+                                    className="flex-1 bg-slate-50 p-3 rounded-xl border border-slate-100 font-semibold text-slate-700 text-sm outline-none"
+                                >
+                                    <option value="All">All Districts</option>
+                                    {districts.map(d => <option key={d} value={d}>{d}</option>)}
+                                </select>
                             </div>
                         </div>
-                    ))
+
+                        {/* Income Prediction */}
+                        <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-3xl p-6 text-white shadow-lg shadow-orange-200">
+                            <h3 className="opacity-90 font-medium text-sm mb-1">Estimated Revenue</h3>
+                            <div className="flex items-end gap-2 mb-4">
+                                <h1 className="text-3xl font-bold">₹1,45,000</h1>
+                                <span className="text-sm opacity-80 mb-1">/ season</span>
+                            </div>
+                            <div className="flex justify-between items-center text-xs font-semibold bg-white/20 p-2 rounded-lg backdrop-blur-sm">
+                                <span>Avg. for {selectedState}</span>
+                                <span className="flex items-center gap-1 bg-white text-orange-600 px-2 py-0.5 rounded ml-2">
+                                    <TrendingUp size={12} /> +12%
+                                </span>
+                            </div>
+                        </div>
+
+                        <h3 className="font-bold text-slate-800 mt-2">Today's Rates</h3>
+
+                        {displayData.length > 0 ? (
+                            displayData.map((item, i) => (
+                                <div key={i} className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center">
+                                    <div>
+                                        <h4 className="font-bold text-slate-800 text-lg">{item.crop}</h4>
+                                        <div className="flex items-center gap-1 text-xs text-slate-400 font-medium mt-1">
+                                            <MapPin size={12} /> {item.location}
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <div className={`font-bold text-lg ${item.trend === 'up' ? 'text-green-600' : item.trend === 'down' ? 'text-red-500' : 'text-orange-500'}`}>
+                                            {item.price}
+                                        </div>
+                                        <div className={`text-[10px] font-bold uppercase flex items-center justify-end gap-1 ${item.trend === 'up' ? 'text-green-600' : item.trend === 'down' ? 'text-red-500' : 'text-orange-500'}`}>
+                                            {item.trend === 'up' ? <TrendingUp size={12} /> : item.trend === 'down' ? <TrendingDown size={12} /> : '➖'}
+                                            {item.trend === 'up' ? 'Rising' : item.trend === 'down' ? 'Falling' : 'Stable'}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="text-center py-10 text-slate-400">
+                                No data available.
+                            </div>
+                        )}
+                    </>
                 ) : (
-                    <div style={{ textAlign: 'center', padding: '20px', color: '#999' }}>
-                        No data available for this selection.
+                    <div className="space-y-4">
+                        <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl flex items-start gap-3">
+                            <Store className="text-blue-600 mt-1" size={20} />
+                            <div>
+                                <h3 className="font-bold text-blue-800">Shop Owners?</h3>
+                                <p className="text-sm text-blue-600 mt-1">Register your shop to list products and reach thousands of farmers.</p>
+                                <button className="mt-3 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md shadow-blue-200">Register Shop</button>
+                            </div>
+                        </div>
+
+                        <h3 className="font-bold text-slate-800">Nearby Shops</h3>
+                        {SHOPS_DATA.map((shop, i) => (
+                            <div key={i} className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+                                <div className="flex justify-between items-start mb-2">
+                                    <div>
+                                        <h4 className="font-bold text-slate-800 text-lg">{shop.name}</h4>
+                                        <span className="text-xs font-bold bg-slate-100 text-slate-500 px-2 py-1 rounded inline-block mt-1">{shop.type}</span>
+                                    </div>
+                                    <div className="bg-green-50 p-2 rounded-full">
+                                        <MapPin className="text-green-600" size={16} />
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2 mt-4">
+                                    <button className="flex-1 bg-slate-50 text-slate-700 py-2 rounded-lg text-sm font-bold">View Inventory</button>
+                                    <button className="flex-1 bg-green-600 text-white py-2 rounded-lg text-sm font-bold shadow-lg shadow-green-100">Call Now</button>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 )}
-
-                <h3 className="mb-4 mt-4">Selling Insight</h3>
-                <div className="card" style={{ borderLeft: '4px solid #2E7D32' }}>
-                    <h4 className="flex-between">
-                        Best Time to Sell
-                        <span className="text-green" style={{ fontSize: '14px', background: '#E8F5E9', padding: '4px 8px', borderRadius: '4px' }}>Next Week</span>
-                    </h4>
-                    <p style={{ fontSize: '13px', margin: 0 }}>
-                        Demand for {displayData[0]?.crop || 'crops'} in {selectedState} is rising due to upcoming festivals.
-                    </p>
-                </div>
             </div>
+
+            <BottomNav />
         </main>
     );
 }

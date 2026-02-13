@@ -11,8 +11,9 @@ export default function Login() {
     const handleLogin = (e) => {
         e.preventDefault();
         // In a real app, send OTP here.
-        // For now, redirect to Onboarding
-        router.push('/onboarding');
+        // In a real app, send OTP here.
+        // For now, redirect to Role Selection
+        router.push('/role');
     };
 
     return (

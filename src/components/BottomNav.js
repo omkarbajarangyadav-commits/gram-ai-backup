@@ -1,14 +1,14 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Bot, Camera, Users, ShoppingCart } from 'lucide-react';
+import { Home, Bot, Camera, Users, ShoppingCart, Briefcase } from 'lucide-react';
 
 export default function BottomNav() {
   const pathname = usePathname();
 
   const navItems = [
     { name: 'Home', icon: Home, href: '/' },
-    { name: 'Assistant', icon: Bot, href: '/assistant' },
+    { name: 'Jobs', icon: Briefcase, href: '/jobs' }, // Replaced Assistant
     { name: 'Heal', icon: Camera, href: '/doctor', isFab: true }, // Central FAB
     { name: 'Community', icon: Users, href: '/community' },
     { name: 'Market', icon: ShoppingCart, href: '/market' },
