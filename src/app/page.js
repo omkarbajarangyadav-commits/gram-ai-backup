@@ -14,17 +14,25 @@ export default function Home() {
   const router = useRouter();
 
   // 1. Check Auth / Onboarding
+  // 1. Check Auth / Onboarding (Auto-Authorize / Guest Mode)
   useEffect(() => {
-    const lang = localStorage.getItem('language');
-    const role = localStorage.getItem('role');
+    let lang = localStorage.getItem('language');
+    let role = localStorage.getItem('role');
 
+    // "Authorized to everyone" - Auto-fill defaults if missing
     if (!lang) {
-      router.push('/login');
-    } else if (!role) {
-      router.push('/role');
-    } else {
-      setCheckingAuth(false);
+      lang = 'en';
+      localStorage.setItem('language', 'en');
     }
+
+    if (!role) {
+      role = 'farmer';
+      localStorage.setItem('role', 'farmer');
+      // Optional: We could redirect to /role to let them choose, 
+      // but for "authorized to everyone" we want immediate access.
+    }
+
+    setCheckingAuth(false);
   }, []);
 
   // Fetch Weather

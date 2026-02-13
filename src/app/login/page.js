@@ -12,6 +12,13 @@ export default function Login() {
     const [timer, setTimer] = useState(30);
     const router = useRouter();
 
+    useEffect(() => {
+        // If already authorized, redirect to home
+        if (localStorage.getItem('language') && localStorage.getItem('role')) {
+            router.push('/');
+        }
+    }, [router]);
+
     // Timer for Resend OTP
     useEffect(() => {
         let interval;
