@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/firebaseAdmin';
-import { generateAIResponse } from '@/lib/gemini';
+import { generateAIResponse } from '@/lib/openai';
 import { Timestamp } from 'firebase-admin/firestore';
 
 export async function POST(request) {
@@ -34,7 +34,7 @@ export async function POST(request) {
             responseId: responseRef.id,
             queryId,
             answer: aiAnswer,
-            model: 'gemini-pro',
+            model: 'gpt-3.5-turbo',
             confidence: 0.9, // Placeholder as Gemini API doesn't always return this simply
             timestamp: Timestamp.now(),
         });

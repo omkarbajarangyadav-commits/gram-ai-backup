@@ -4,7 +4,7 @@ import { Mic, Send, Bot, Leaf, Globe, Settings, Lock } from 'lucide-react';
 
 export default function AssistantLink() {
     const [messages, setMessages] = useState([
-        { role: 'ai', text: 'Namaste! I am GramAI. How can I assist you with farming today?', type: 'text' }
+        { role: 'ai', text: 'Namaste! I am Smart Farm. How can I assist you with farming today?', type: 'text' }
     ]);
     const [input, setInput] = useState('');
     const [isListening, setIsListening] = useState(false);
@@ -218,7 +218,7 @@ export default function AssistantLink() {
                         }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                                 {msg.role === 'ai' && <Bot size={16} color="#2E7D32" />}
-                                <span style={{ fontSize: '12px', opacity: 0.8 }}>{msg.role === 'user' ? 'You' : 'GramAI'}</span>
+                                <span style={{ fontSize: '12px', opacity: 0.8 }}>{msg.role === 'user' ? 'You' : 'Smart Farm'}</span>
                             </div>
                             <p style={{ marginBottom: msg.action ? '8px' : '0', color: 'inherit' }}>{msg.text}</p>
                             {msg.action && (

@@ -64,7 +64,7 @@ export default function Login() {
                     }}>
                         🌱
                     </div>
-                    <h1 className="text-green" style={{ margin: 0 }}>GramAI</h1>
+                    <h1 className="text-green" style={{ margin: 0 }}>Smart Farm</h1>
                     <p style={{ fontSize: '14px', color: '#757575' }}>Your Smart Farming Assistant</p>
                 </div>
 

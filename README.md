@@ -1,6 +1,6 @@
-# GramAI - AI for Rural India 🌾
+# Smart Farm - AI for Rural India 🌾
 
-GramAI is a modern, AI-powered rural sustainability platform designed to empower farmers and Gram Panchayats with actionable insights, weather alerts, and market intelligence in their local language (Hindi/Marathi).
+Smart Farm is a modern, AI-powered rural sustainability platform designed to empower farmers and Gram Panchayats with actionable insights, weather alerts, and market intelligence in their local language (Hindi/Marathi).
 
 ## 1. System Architecture
 
@@ -33,7 +33,7 @@ graph TD
 
 ### Step 1: Create Firebase Project
 1. Go to [Firebase Console](https://console.firebase.google.com/).
-2. Click **"Add project"** and name it `gram-ai`.
+2. Click **"Add project"** and name it `smart-farm`.
 3. Disable Google Analytics for simplicity (optional).
 
 ### Step 2: Enable Firestore
@@ -59,8 +59,8 @@ FIREBASE_PROJECT_ID=your-project-id-from-json
 FIREBASE_CLIENT_EMAIL=your-email-from-json
 FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n..."
 
-# Google AI Studio
-GOOGLE_API_KEY=your-gemini-api-key
+# OpenAI API (Required for AI features)
+OPENAI_API_KEY=your-openai-api-key
 ```
 
 ---
@@ -68,7 +68,7 @@ GOOGLE_API_KEY=your-gemini-api-key
 ## 3. Presentation (PPT) Content
 
 **Slide 1: Title**
-- **Title:** GramAI: AI-Powered Rural Sustainability Platform
+- **Title:** Smart Farm: AI-Powered Rural Sustainability Platform
 - **Subtitle:** Empowering Farmers with Technology & Intelligence
 - **Presenter:** [Your Name]
 
@@ -79,7 +79,7 @@ GOOGLE_API_KEY=your-gemini-api-key
 - **Climate Risk:** Unpredictable weather causes crop loss.
 
 **Slide 3: Solution Overview**
-- **GramAI** is a mobile-first web app bridging the gap between technology and the field.
+- **Smart Farm** is a mobile-first web app bridging the gap between technology and the field.
 - **Voice-First Interface:** Speak in Hindi or Marathi.
 - **AI Intelligence:** Instant answers for crop diseases, government schemes, and farming tips.
 - **Hyper-Local:** Village-level weather and market data.
@@ -95,7 +95,7 @@ GOOGLE_API_KEY=your-gemini-api-key
 - **Frontend:** Next.js (React) - Fast & Responsive.
 - **Backend:** Node.js (API Routes) - Secure & Scalable.
 - **Database:** Firebase Firestore - Real-time Data.
-- **AI Model:** Google Gemini - Multilingual Intelligence.
+- **AI Model:** OpenAI GPT-3.5/4 - Multilingual Intelligence.
 
 **Slide 6: System Architecture**
 - *[Insert Diagram from Section 1]*
@@ -112,7 +112,7 @@ GOOGLE_API_KEY=your-gemini-api-key
 - **Marketplace:** Direct buying/selling of produce.
 
 **Slide 9: Conclusion**
-- GramAI is not just an app; it's a **digital companion** for the Indian farmer.
+- Smart Farm is not just an app; it's a **digital companion** for the Indian farmer.
 - Scalable, Secure, and Impactful.
 - **Thank You!**
 

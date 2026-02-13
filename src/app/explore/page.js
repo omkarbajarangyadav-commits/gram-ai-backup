@@ -19,9 +19,11 @@ export default function Explore() {
     ];
 
     const schemes = [
+        { name: 'MahaDBT Farmer Portal', desc: 'Apply for tractor, drip irrigation & subsidies', link: 'https://mahadbt.maharashtra.gov.in/' },
         { name: 'PM-Kisan Samman Nidhi', desc: '₹6,000/year financial support', link: 'https://pmkisan.gov.in/' },
+        { name: 'MahaAgri (Dept of Agriculture)', desc: 'Official diverse schemes & GRs', link: 'https://krishi.maharashtra.gov.in/' },
+        { name: 'MSAMB (Marketing Board)', desc: 'Daily mandi prices & export info', link: 'https://www.msamb.com/' },
         { name: 'Soil Health Card', desc: 'Check soil nutrient status', link: 'https://soilhealth.dac.gov.in/' },
-        { name: 'e-NAM', desc: 'National Agriculture Market', link: 'https://www.enam.gov.in/' },
         { name: 'Pradhan Mantri Fasal Bima', desc: 'Crop Insurance Scheme', link: 'https://pmfby.gov.in/' },
     ];
 

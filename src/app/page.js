@@ -1,16 +1,41 @@
 'use client';
-import { useState } from 'react';
-import { CloudRain, Sun, Droplets, ArrowRight, MapPin } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { CloudRain, Sun, Droplets, ArrowRight, MapPin, Wind } from 'lucide-react';
 import Link from 'next/link';
+import { maharashtraDistricts } from '@/data/maharashtra';
 
 export default function Home() {
-  const [location, setLocation] = useState('Pimpli, Solapur');
+  const [selectedDistrict, setSelectedDistrict] = useState(maharashtraDistricts.find(d => d.name === 'Pune') || maharashtraDistricts[0]);
+  const [weather, setWeather] = useState({ temp: '--', condition: 'Loading...', humidity: '--', wind: '--', rain: '--' });
 
-  const handleLocationChange = () => {
-    // Simple simulation of location switching
-    const locations = ['Pimpli, Solapur', 'Indore, MP', 'Ludhiana, Punjab', 'Belagavi, Karnataka'];
-    const next = locations[(locations.indexOf(location) + 1) % locations.length];
-    setLocation(next);
+  // Fetch Weather
+  useEffect(() => {
+    async function fetchWeather() {
+      try {
+        const { lat, lon } = selectedDistrict;
+        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,rain,wind_speed_10m&timezone=auto`);
+        const data = await res.json();
+
+        const current = data.current;
+        setWeather({
+          temp: `${Math.round(current.temperature_2m)}°C`,
+          condition: current.rain > 0 ? 'Rainy' : 'Clear', // Simplified
+          humidity: `${current.relative_humidity_2m}%`,
+          wind: `${current.wind_speed_10m} km/h`,
+          rain: `${current.rain} mm`
+        });
+      } catch (error) {
+        console.error("Weather fetch failed", error);
+        setWeather(prev => ({ ...prev, condition: 'Unavailable' }));
+      }
+    }
+    fetchWeather();
+  }, [selectedDistrict]);
+
+  const handleDistrictChange = (e) => {
+    const districtName = e.target.value;
+    const district = maharashtraDistricts.find(d => d.name === districtName);
+    if (district) setSelectedDistrict(district);
   };
 
   return (
@@ -19,17 +44,30 @@ export default function Home() {
       <div className="header">
         <div className="flex-between">
           <div>
-            <h2 className="text-green">GramAI</h2>
-            <div
-              onClick={handleLocationChange}
-              style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', opacity: 0.9 }}
-            >
+            <h2 className="text-green">Smart Farm</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', opacity: 0.9 }}>
               <MapPin size={14} />
-              <p style={{ marginBottom: 0, textDecoration: 'underline' }}>{location}</p>
+              <select
+                value={selectedDistrict.name}
+                onChange={handleDistrictChange}
+                style={{
+                  border: 'none',
+                  background: 'transparent',
+                  fontWeight: '600',
+                  fontSize: '14px',
+                  color: '#2E7D32',
+                  outline: 'none',
+                  cursor: 'pointer'
+                }}
+              >
+                {maharashtraDistricts.map(d => (
+                  <option key={d.name} value={d.name}>{d.name}</option>
+                ))}
+              </select>
             </div>
           </div>
           <div style={{ width: 40, height: 40, background: '#E8F5E9', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2E7D32', fontWeight: 'bold' }}>
-            {location[0]}
+            {selectedDistrict.name[0]}
           </div>
         </div>
       </div>
@@ -39,23 +77,23 @@ export default function Home() {
         <div className="card" style={{ background: 'linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%)', color: 'white' }}>
           <div className="flex-between">
             <div>
-              <h1 style={{ color: 'white', marginBottom: '4px' }}>28°C</h1>
-              <p style={{ color: '#E8F5E9' }}>Partly Cloudy</p>
+              <h1 style={{ color: 'white', marginBottom: '4px' }}>{weather.temp}</h1>
+              <p style={{ color: '#E8F5E9' }}>{weather.condition}</p>
             </div>
-            <Sun size={48} color="#FFF176" />
+            {weather.condition === 'Rainy' ? <CloudRain size={48} color="#90CAF9" /> : <Sun size={48} color="#FFF176" />}
           </div>
           <div className="flex-between" style={{ marginTop: '16px', background: 'rgba(255,255,255,0.2)', padding: '12px', borderRadius: '12px' }}>
             <div className="flex-col text-center">
               <span style={{ fontSize: '12px', opacity: 0.9 }}>Humidity</span>
-              <span style={{ fontWeight: '600' }}>65%</span>
+              <span style={{ fontWeight: '600' }}>{weather.humidity}</span>
             </div>
             <div className="flex-col text-center">
               <span style={{ fontSize: '12px', opacity: 0.9 }}>Rainfall</span>
-              <span style={{ fontWeight: '600' }}>12mm</span>
+              <span style={{ fontWeight: '600' }}>{weather.rain}</span>
             </div>
             <div className="flex-col text-center">
               <span style={{ fontSize: '12px', opacity: 0.9 }}>Wind</span>
-              <span style={{ fontWeight: '600' }}>14km/h</span>
+              <span style={{ fontWeight: '600' }}>{weather.wind}</span>
             </div>
           </div>
         </div>

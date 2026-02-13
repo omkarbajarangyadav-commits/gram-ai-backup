@@ -1,5 +1,5 @@
 {
-  "name": "gram-ai",
+  "name": "smart-farm",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,7 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.24.1",
+    "openai": "^4.28.0",
     "firebase-admin": "^13.6.0",
     "framer-motion": "^12.29.2",
     "lucide-react": "^0.563.0",

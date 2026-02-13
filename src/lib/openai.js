@@ -1,26 +1,22 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import OpenAI from 'openai';
 
-const apiKey = process.env.GOOGLE_API_KEY;
-let genAI = null;
+const apiKey = process.env.OPENAI_API_KEY;
+let openai = null;
 
 if (apiKey) {
-    try {
-        genAI = new GoogleGenerativeAI(apiKey);
-    } catch (e) {
-        console.error("Gemini Init Error:", e);
-    }
+    openai = new OpenAI({
+        apiKey: apiKey,
+    });
 }
 
 export async function generateAIResponse(prompt, language = 'hi-IN') {
-    if (!genAI) {
-        console.warn("Gemini API Key missing.");
-        return "System Check: Backend is active, but Google API Key is missing. Please check .env.local.";
+    if (!openai) {
+        console.warn("OpenAI API Key missing.");
+        return "System Check: Backend is active, but OpenAI API Key is missing. Please check .env.local and add OPENAI_API_KEY.";
     }
 
     try {
-        const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
-
-        let systemInstruction = `You are "GramAI", an expert agricultural advisor for Indian farmers.
+        const systemInstruction = `You are "Smart Farm", an expert agricultural advisor for Indian farmers.
         - **Language:** Always reply in strict ${language === 'mr-IN' ? 'Marathi (मराठी)' : 'Hindi (हिंदी)'}.
         - **Tone:** Respectful, simple, and encouraging (like a wise village elder).
         - **Content:** Provide actionable advice on crops, fertilizers, pest control, and government schemes (PM-Kisan, Fasal Bima).
@@ -29,11 +25,17 @@ export async function generateAIResponse(prompt, language = 'hi-IN') {
         - **Safety:** If asked about dangerous chemicals, warn about safety gear.
         - **Unknowns:** If unsure, ask clarifying questions instead of guessing.`;
 
-        const result = await model.generateContent([systemInstruction, prompt]);
-        const response = await result.response;
-        return response.text();
+        const completion = await openai.chat.completions.create({
+            messages: [
+                { role: "system", content: systemInstruction },
+                { role: "user", content: prompt }
+            ],
+            model: "gpt-3.5-turbo",
+        });
+
+        return completion.choices[0].message.content;
     } catch (error) {
-        console.error('Gemini AI Error:', error);
+        console.error('OpenAI Error:', error);
         return 'क्षमा करा, मला सध्या उत्तर देण्यात अडचण येत आहे. कृपया थोड्या वेळाने पुन्हा प्रयत्न करा.';
     }
 }

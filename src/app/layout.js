@@ -2,7 +2,7 @@ import './globals.css';
 import BottomNav from '@/components/BottomNav';
 
 export const metadata = {
-  title: 'GramAI - Rural Sustainability',
+  title: 'Smart Farm - Rural Sustainability',
   description: 'AI-powered platform for rural India',
 };
 
