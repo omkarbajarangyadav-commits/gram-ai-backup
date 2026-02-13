@@ -180,7 +180,12 @@ export default function Market() {
                             <div>
                                 <h3 className="font-bold text-blue-800">Shop Owners?</h3>
                                 <p className="text-sm text-blue-600 mt-1">Register your shop to list products and reach thousands of farmers.</p>
-                                <button className="mt-3 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md shadow-blue-200">Register Shop</button>
+                                <button
+                                    onClick={() => router.push('/register-shop')}
+                                    className="mt-3 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md shadow-blue-200 active:scale-95 transition-transform"
+                                >
+                                    Register Shop
+                                </button>
                             </div>
                         </div>
 
