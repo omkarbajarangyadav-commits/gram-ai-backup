@@ -9,83 +9,72 @@ if (apiKey && !apiKey.includes('your-openai-api-key')) {
     });
 }
 
-// Mock Responses for Demo Mode (Expanded for "Hinglish" / Romanized inputs)
-const MOCK_RESPONSES = {
-    'hi-IN': {
-        default: "नमस्ते! (Demo Mode). खऱ्या उत्तरांसाठी API Key जोडा. \nमी 'सोयाबीन', 'कापूस', 'हवामान', 'बाजार भाव' याबद्दल माहिती देऊ शकतो.",
-        keywords: {
-            'नमस्ते': "राम राम! कसे आहात?",
-            'hello': "नमस्ते! मी स्मार्ट फार्म असिस्टंट आहे.",
-            'weather': "आजचे हवामान कोरडे राहील. (28°C).",
-            'havaman': "आजचे हवामान कोरडे राहील. (28°C).",
-            'हवामान': "आजचे हवामान कोरडे राहील. (28°C).",
-            'soyabean': "सोयाबीन टीप: \n- 15 दिवसांनी निंबोळी अर्काची फवारणी करा.\n- तण काढणे आवश्यक आहे.",
-            'soya': "सोयाबीन पिकासाठी ओलावा टिकवून ठेवणे गरजेचे आहे.",
-            'सोयाबीन': "सोयाबीन टीप: \n- 15 दिवसांनी निंबोळी अर्काची फवारणी करा.",
-            'cotton': "कापूस पिकावर बोंडअळीचा प्रादुर्भाव होऊ शकतो. कामगंध सापळे वापरा.",
-            'kapus': "कापूस पिकावर बोंडअळीचा प्रादुर्भाव होऊ शकतो. कामगंध सापळे वापरा.",
-            'कापूस': "कापूस पिकावर बोंडअळीचा प्रादुर्भाव होऊ शकतो.",
-            'khad': "सेंद्रिय खत (शेणखत) सर्वोत्तम आहे.",
-            'fertilizer': "सेंद्रिय खत (शेणखत) सर्वोत्तम आहे.",
-            'market': "आजचे बाजार भाव:\n- सोयाबीन: ₹4,800\n- कापूस: ₹6,950",
-            'bhav': "आजचे बाजार भाव:\n- सोयाबीन: ₹4,800\n- कापूस: ₹6,950"
-        }
+// SMART MOCK DATABASE (Enhanced for Offline/Demo Mode)
+const MOCK_KNOWLEDGE_BASE = {
+    keywords: {
+        'weather': "📍 weather: Based on historical data for this season, expect dry conditions with 60% humidity. Ideal for cotton harvesting. (Simulated)",
+        'havaman': "📍 havaman: Based on historical data for this season, expect dry conditions with 60% humidity. Ideal for cotton harvesting. (Simulated)",
+        'pani': "💧 irrigation: For cotton, drip irrigation is recommended every 4 days. Wheat needs water every 15 days.",
+        'water': "💧 irrigation: For cotton, drip irrigation is recommended every 4 days. Wheat needs water every 15 days.",
+        'disease': "🦠 diagnostics: Please upload a photo in the 'Heal Crop' section for accurate diagnosis. Generally, yellowing leaves indicate Nitrogen deficiency.",
+        'khat': "beej: For Soyabean, use JS-335 or MACS-1188 varieties. Seed rate: 30kg/acre.",
+        'fertilizer': "🧪 fertilizer: Use NPK 10:26:26 for cotton flowering stage. Add Magnesium Sulfate 10kg/acre for greenness.",
+        'market': "💰 market: Today's rates - Soyabean: ₹4800, Cotton: ₹7000, Wheat: ₹2200. Prices are stable.",
+        'bhav': "💰 market: Today's rates - Soyabean: ₹4800, Cotton: ₹7000, Wheat: ₹2200. Prices are stable.",
+        'loan': "🏦 scheme: KCC (Kisan Credit Card) offers loans at 4% interest. Visit your nearest cooperative bank.",
     },
-    'hi-en': {
-        default: "Namaste! (Demo Mode). Main 'Soyabean', 'Cotton', 'Weather', 'Market rate' ke baare mein bata sakta hoon.",
-        keywords: {
-            'namaste': "Ram Ram! Kaise ho aap?",
-            'hello': "Namaste! Main aapka Krushi Mitra hoon.",
-            'weather': "Aaj mausam saaf rahega. (28°C).",
-            'mausam': "Aaj mausam saaf rahega. (28°C).",
-            'barish': "Agale 2 din baarish ki sambhavna nahi hai.",
-            'rain': "Agale 2 din baarish ki sambhavna nahi hai.",
-            'soyabean': "Soyabean tips:\n- 15 din baad Nimboli ark ka spray karein.\n- Tan (weeds) nikalna zaroori hai.",
-            'soya': "Soyabean ke liye nami (moisture) zaroori hai.",
-            'cotton': "Cotton (Kapas) me pink bollworm ka khatra ho sakta hai. Pheromone traps lagayein.",
-            'kapas': "Cotton (Kapas) me pink bollworm ka khatra ho sakta hai. Pheromone traps lagayein.",
-            'fertilizer': "Organic khad (Cow dung) sabse best hai.",
-            'khad': "Organic khad (Cow dung) sabse best hai.",
-            'market': "Aaj ke Market Rates:\n- Soyabean: ₹4,800\n- Cotton: ₹6,950",
-            'bhav': "Aaj ke Market Rates:\n- Soyabean: ₹4,800\n- Cotton: ₹6,950",
-            'rate': "Aaj ke Market Rates:\n- Soyabean: ₹4,800\n- Cotton: ₹6,950"
-        }
+    default: {
+        'hi-IN': "नमस्ते! (Demo Mode) मी सध्या इंटरनेटशी कनेक्ट नाही, पण मी शेतीबद्दल मदत करू शकतो. 'हवामान', 'बाजार भाव', 'खत' याबद्दल विचारा.",
+        'en': "Hello! (Demo Mode) I'm currently running in low-data mode. Ask me about 'Weather', 'Market Rates', or 'Fertilizers'."
     }
 };
 
-function getMockResponse(prompt, language) {
+function getSmartMockResponse(prompt, language) {
     const lowerPrompt = prompt.toLowerCase();
 
-    // Determine language key
-    let langKey = 'hi-IN'; // Default
-    if (language === 'mr-IN') langKey = 'mr-IN';
-    if (language === 'hi-en') langKey = 'hi-en';
-
-    const langData = MOCK_RESPONSES[langKey];
-
-    // Check keywords
-    for (const [key, value] of Object.entries(langData.keywords)) {
-        if (lowerPrompt.includes(key)) return value;
+    // 1. Check for Keywords
+    for (const [key, response] of Object.entries(MOCK_KNOWLEDGE_BASE.keywords)) {
+        if (lowerPrompt.includes(key)) {
+            return language.startsWith('hi') || language.startsWith('mr')
+                ? `(Demo) ${response} (भाषांतर: ${response})`
+                : response;
+        }
     }
 
-    return langData.default;
+    // 2. Default Fallback
+    return language.startsWith('hi') || language.startsWith('mr')
+        ? MOCK_KNOWLEDGE_BASE.default['hi-IN']
+        : MOCK_KNOWLEDGE_BASE.default['en'];
 }
 
-export async function generateAIResponse(prompt, language = 'hi-IN') {
-    // 1. If No API Key -> Use Mock Mode
+export async function generateAIResponse(prompt, language = 'en') {
+    // 1. If No API Key -> Use Smart Mock Mode
     if (!openai) {
-        console.warn("OpenAI API Key missing. Using Mock Mode.");
-        await new Promise(resolve => setTimeout(resolve, 1000)); // 1s delay for realism
-        return getMockResponse(prompt, language);
+        console.warn("OpenAI API Key missing. Using Smart Mock Mode.");
+        await new Promise(resolve => setTimeout(resolve, 800)); // Simulate thinking
+        return getSmartMockResponse(prompt, language);
     }
 
-    // 2. Real API Call
+    // 2. Real API Call (GPT-4o-mini optimized)
     try {
         const systemInstruction = `
-        You are "Gram Guru", a friendly agricultural advisor.
-        - Language: ${language === 'mr-IN' ? 'Marathi' : (language === 'hi-en' ? 'Hinglish' : 'Hindi')}.
-        - Role: Village Elder / Agri Expert.
-        - Rules: Concise, bullet points, organic first.
+        You are "Gram Guru", an expert agricultural AI assistant for Indian farmers.
+        
+        CONTEXT:
+        - User Language: ${language}
+        - Location: India (Maharashtra focus)
+        - Tone: Respectful (using 'Ji' or 'Rao'), practical, and encouraging.
+        
+        INSTRUCTIONS:
+        1. Keep answers SHORT (max 3-4 sentences). Farmers are busy.
+        2. Use bullet points for readability.
+        3. Recommend ORGANIC solutions first, then chemical.
+        4. If asking about prices, mention that "Market rates vary daily".
+        5. For crops like Cotton/Soyabean/Sugarcane, give specific advice.
+        
+        FORMAT:
+        - Use emojis 🌾🚜💧 to make it friendly.
+        - If the user asks in Hinglish/Marathi, reply in the same mix/language.
         `;
 
         const completion = await openai.chat.completions.create({
@@ -93,14 +82,14 @@ export async function generateAIResponse(prompt, language = 'hi-IN') {
                 { role: "system", content: systemInstruction },
                 { role: "user", content: prompt }
             ],
-            model: "gpt-3.5-turbo",
-            temperature: 0.7,
-            max_tokens: 300,
+            model: "gpt-3.5-turbo", // Cost effective
+            temperature: 0.5,
+            max_tokens: 350,
         });
 
         return completion.choices[0].message.content;
     } catch (error) {
         console.error('OpenAI Error:', error);
-        return getMockResponse(prompt, language); // Fallback to mock on error
+        return getSmartMockResponse(prompt, language); // Smart Fallback
     }
 }
