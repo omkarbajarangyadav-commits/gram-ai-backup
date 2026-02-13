@@ -1,210 +1,114 @@
 'use client';
-import { useState } from 'react';
-import { Briefcase, MapPin, IndianRupee, Phone, Calendar, User, Plus } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Briefcase, MapPin, IndianRupee, Plus, Phone } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
+import { motion } from 'framer-motion';
 
-// Mock Data
+// Mock Data for Jobs
 const MOCK_JOBS = [
     {
         id: 1,
-        title: 'Cotton Picking',
-        farmer: 'Ramesh Patil',
+        title: 'Cotton Picking Labor Needed',
+        employer: 'Rajesh Patil',
         location: 'Akola, MH',
-        wage: '₹500 / day',
-        type: 'Daily Wage',
-        posted: '2 hrs ago',
-        phone: '9876543210'
+        wage: '450',
+        type: 'Daily',
+        tags: ['Harvesting', 'Urgent']
     },
     {
         id: 2,
-        title: 'Sugarcane Harvesting',
-        farmer: 'Suresh Deshmukh',
+        title: 'Tractor Driver Required',
+        employer: 'Kisan Agro Farm',
         location: 'Pune, MH',
-        wage: '₹800 / ton',
-        type: 'Contract',
-        posted: '5 hrs ago',
-        phone: '9123456780'
+        wage: '600',
+        type: 'Daily',
+        tags: ['Driving', 'Machinery']
+    },
+    {
+        id: 3,
+        title: 'Spraying Pesticides',
+        employer: 'Suresh Deshmukh',
+        location: 'Latur, MH',
+        wage: '500',
+        type: 'Daily',
+        tags: ['Spraying']
     }
 ];
 
 export default function Jobs() {
-    const [activeTab, setActiveTab] = useState('find'); // 'find' or 'post'
+    const [role, setRole] = useState('farmer');
     const [jobs, setJobs] = useState(MOCK_JOBS);
-    const [showForm, setShowForm] = useState(false);
-    const [newJob, setNewJob] = useState({ title: '', location: '', wage: '', phone: '' });
 
-    const handleAddJob = (e) => {
-        e.preventDefault();
-        const job = {
-            id: Date.now(),
-            title: newJob.title,
-            farmer: 'You (Farmer)',
-            location: newJob.location,
-            wage: `₹${newJob.wage}`,
-            type: 'Daily Wage',
-            posted: 'Just now',
-            phone: newJob.phone
-        };
-        setJobs([job, ...jobs]);
-        setShowForm(false);
-        setActiveTab('find');
-        setNewJob({ title: '', location: '', wage: '', phone: '' });
-    };
+    useEffect(() => {
+        const storedRole = localStorage.getItem('role');
+        if (storedRole) setRole(storedRole);
+    }, []);
 
     return (
         <main className="min-h-screen bg-slate-50 pb-24">
             {/* Header */}
-            <header className="bg-white p-6 sticky top-0 z-10 shadow-sm rounded-b-[2rem]">
-                <div className="flex justify-between items-center mb-4">
+            <div className="bg-white p-6 rounded-b-[2rem] shadow-sm sticky top-0 z-10">
+                <div className="flex justify-between items-center mb-2">
                     <div>
-                        <h1 className="text-2xl font-extrabold text-slate-800">Labor Market</h1>
-                        <p className="text-sm text-slate-500 font-medium">Find work or hire workers</p>
+                        <h1 className="text-2xl font-extrabold text-slate-800">Krishi Rozgar</h1>
+                        <p className="text-sm text-slate-500 font-medium">Find Jobs or Hire Workers</p>
                     </div>
-                    <div className="bg-orange-100 p-2 rounded-full">
-                        <Briefcase className="text-orange-600" size={24} />
+                    <div className="bg-blue-50 p-2 rounded-full">
+                        <Briefcase className="text-blue-600" size={24} />
                     </div>
                 </div>
 
-                {/* Tabs */}
-                <div className="flex bg-slate-100 p-1 rounded-xl">
-                    <button
-                        onClick={() => setActiveTab('find')}
-                        className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all ${activeTab === 'find' ? 'bg-white shadow-sm text-slate-800' : 'text-slate-400 hover:text-slate-600'}`}
-                    >
-                        Find Jobs
+                {role === 'farmer' && (
+                    <button className="w-full mt-4 bg-slate-900 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform">
+                        <Plus size={20} />
+                        Post a Job
                     </button>
-                    <button
-                        onClick={() => setActiveTab('post')}
-                        className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all ${activeTab === 'post' ? 'bg-white shadow-sm text-slate-800' : 'text-slate-400 hover:text-slate-600'}`}
-                    >
-                        Post Job
-                    </button>
-                </div>
-            </header>
+                )}
+            </div>
 
             {/* Content */}
-            <div className="p-6 space-y-4">
-                {activeTab === 'find' ? (
-                    jobs.map((job) => (
-                        <div key={job.id} className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
-                            <div className="flex justify-between items-start mb-3">
-                                <div>
-                                    <h3 className="font-bold text-slate-800 text-lg">{job.title}</h3>
-                                    <div className="flex items-center gap-1 text-xs text-slate-400 font-medium">
-                                        <User size={12} /> {job.farmer} • {job.posted}
-                                    </div>
-                                </div>
-                                <span className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-xs font-bold border border-green-100">
-                                    {job.type}
-                                </span>
+            <div className="px-5 mt-6 space-y-4">
+                {jobs.map((job) => (
+                    <motion.div
+                        key={job.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100"
+                    >
+                        <div className="flex justify-between items-start mb-3">
+                            <div>
+                                <h3 className="font-bold text-slate-800 text-lg leading-tight">{job.title}</h3>
+                                <p className="text-xs text-slate-500 font-medium mt-1">{job.employer}</p>
                             </div>
-
-                            <div className="grid grid-cols-2 gap-3 mb-4">
-                                <div className="bg-slate-50 p-2 rounded-lg flex items-center gap-2">
-                                    <MapPin size={16} className="text-slate-400" />
-                                    <span className="text-sm font-semibold text-slate-700">{job.location}</span>
-                                </div>
-                                <div className="bg-slate-50 p-2 rounded-lg flex items-center gap-2">
-                                    <IndianRupee size={16} className="text-slate-400" />
-                                    <span className="text-sm font-semibold text-slate-700">{job.wage}</span>
-                                </div>
-                            </div>
-
-                            <a
-                                href={`tel:${job.phone}`}
-                                className="w-full bg-slate-900 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform"
-                            >
-                                <Phone size={18} />
-                                Call Employer
-                            </a>
+                            <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded-md">
+                                ₹{job.wage}/day
+                            </span>
                         </div>
-                    ))
-                ) : (
-                    !showForm ? (
-                        <div className="text-center py-10">
-                            <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
-                                <Plus size={40} />
-                            </div>
-                            <h3 className="text-lg font-bold text-slate-800 mb-2">Hire Workers</h3>
-                            <p className="text-slate-400 text-sm mb-6 max-w-xs mx-auto">Post a job listing to find reliable agriculture workers in your area.</p>
-                            <button
-                                onClick={() => setShowForm(true)}
-                                className="bg-green-600 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-green-200 active:scale-95 transition-transform"
-                            >
-                                Create Job Post
+
+                        <div className="flex items-center gap-2 text-xs text-slate-400 font-bold mb-4">
+                            <span className="flex items-center gap-1"><MapPin size={12} /> {job.location}</span>
+                            <span>•</span>
+                            <span>{job.type}</span>
+                        </div>
+
+                        <div className="flex gap-2 mb-4">
+                            {job.tags.map(tag => (
+                                <span key={tag} className="text-[10px] bg-slate-100 text-slate-600 px-2 py-1 rounded-md font-bold">
+                                    {tag}
+                                </span>
+                            ))}
+                        </div>
+
+                        <div className="flex gap-3">
+                            <button className="flex-1 bg-green-600 text-white py-2.5 rounded-xl font-bold text-sm shadow-green-200 shadow-md flex items-center justify-center gap-2">
+                                <Phone size={16} /> Call
+                            </button>
+                            <button className="flex-1 bg-white border border-slate-200 text-slate-700 py-2.5 rounded-xl font-bold text-sm">
+                                Details
                             </button>
                         </div>
-                    ) : (
-                        <form onSubmit={handleAddJob} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-4">
-                            <h3 className="text-lg font-bold text-slate-800 mb-2">New Job Post</h3>
-
-                            <div>
-                                <label className="text-xs font-bold text-slate-500 uppercase">Job Title</label>
-                                <input
-                                    type="text"
-                                    required
-                                    value={newJob.title}
-                                    onChange={(e) => setNewJob({ ...newJob, title: e.target.value })}
-                                    className="w-full bg-slate-50 border border-slate-100 rounded-xl p-3 font-semibold outline-none focus:border-green-500"
-                                    placeholder="e.g. Cotton Picking"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="text-xs font-bold text-slate-500 uppercase">Location</label>
-                                <input
-                                    type="text"
-                                    required
-                                    value={newJob.location}
-                                    onChange={(e) => setNewJob({ ...newJob, location: e.target.value })}
-                                    className="w-full bg-slate-50 border border-slate-100 rounded-xl p-3 font-semibold outline-none focus:border-green-500"
-                                    placeholder="e.g. Akola, MH"
-                                />
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="text-xs font-bold text-slate-500 uppercase">Daily Wage (₹)</label>
-                                    <input
-                                        type="number"
-                                        required
-                                        value={newJob.wage}
-                                        onChange={(e) => setNewJob({ ...newJob, wage: e.target.value })}
-                                        className="w-full bg-slate-50 border border-slate-100 rounded-xl p-3 font-semibold outline-none focus:border-green-500"
-                                        placeholder="500"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="text-xs font-bold text-slate-500 uppercase">Phone</label>
-                                    <input
-                                        type="tel"
-                                        required
-                                        value={newJob.phone}
-                                        onChange={(e) => setNewJob({ ...newJob, phone: e.target.value })}
-                                        className="w-full bg-slate-50 border border-slate-100 rounded-xl p-3 font-semibold outline-none focus:border-green-500"
-                                        placeholder="987..."
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="flex gap-3 pt-2">
-                                <button
-                                    type="button"
-                                    onClick={() => setShowForm(false)}
-                                    className="flex-1 bg-slate-100 text-slate-600 py-3 rounded-xl font-bold"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold shadow-lg shadow-green-200"
-                                >
-                                    Post Job
-                                </button>
-                            </div>
-                        </form>
-                    )
-                )}
+                    </motion.div>
+                ))}
             </div>
 
             <BottomNav />
