@@ -1,18 +1,24 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { TrendingUp, TrendingDown, MapPin, Filter, ShoppingBag, Store } from 'lucide-react';
-import BottomNav from '@/components/BottomNav';
-
-
-
+import { useRouter } from 'next/navigation';
+import { TrendingUp, TrendingDown, MapPin, Filter, ShoppingBag, Store, ChevronLeft, LogOut } from 'lucide-react';
 
 export default function Market() {
+    const router = useRouter();
     const [marketData, setMarketData] = useState({});
     const [shopsData, setShopsData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedState, setSelectedState] = useState('Maharashtra');
     const [selectedDistrict, setSelectedDistrict] = useState('All');
     const [activeTab, setActiveTab] = useState('rates'); // 'rates' or 'shops'
+
+    const handleLogout = () => {
+        if (confirm('Are you sure you want to logout?')) {
+            localStorage.removeItem('language');
+            localStorage.removeItem('role');
+            router.push('/login');
+        }
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -60,12 +66,22 @@ export default function Market() {
             {/* Header */}
             <div className="bg-white p-6 rounded-b-[2rem] shadow-sm sticky top-0 z-10">
                 <div className="flex justify-between items-center mb-4">
-                    <div>
-                        <h2 className="text-2xl font-extrabold text-green-700">Market Pulse</h2>
-                        <p className="text-sm text-slate-500 font-medium">Live Prices & Local Shops</p>
+                    <div className="flex items-center gap-3">
+                        <button onClick={() => router.back()} className="p-2 bg-slate-100 rounded-full text-slate-600 hover:bg-slate-200 transaction-colors">
+                            <ChevronLeft size={20} />
+                        </button>
+                        <div>
+                            <h2 className="text-2xl font-extrabold text-green-700">Market Pulse</h2>
+                            <p className="text-sm text-slate-500 font-medium">Live Prices & Local Shops</p>
+                        </div>
                     </div>
-                    <div className="bg-green-50 p-2 rounded-full">
-                        <ShoppingBag className="text-green-600" size={24} />
+                    <div className="flex items-center gap-2">
+                        <button onClick={handleLogout} className="p-2 bg-red-50 text-red-500 rounded-full hover:bg-red-100 transition-colors">
+                            <LogOut size={18} />
+                        </button>
+                        <div className="bg-green-50 p-2 rounded-full">
+                            <ShoppingBag className="text-green-600" size={24} />
+                        </div>
                     </div>
                 </div>
 

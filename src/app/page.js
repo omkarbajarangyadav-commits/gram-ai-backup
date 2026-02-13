@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { CloudRain, Sun, Droplets, ArrowRight, MapPin, Leaf, BarChart3, Bot, ChevronRight, Wind } from 'lucide-react';
+import { CloudRain, Sun, Droplets, ArrowRight, MapPin, Leaf, BarChart3, Bot, ChevronRight, Wind, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { maharashtraDistricts } from '@/data/maharashtra';
 import { motion } from 'framer-motion';
@@ -13,7 +13,14 @@ export default function Home() {
   const [checkingAuth, setCheckingAuth] = useState(true);
   const router = useRouter();
 
-  // 1. Check Auth / Onboarding
+  const handleLogout = () => {
+    if (confirm('Are you sure you want to logout?')) {
+      localStorage.removeItem('language');
+      localStorage.removeItem('role');
+      router.push('/login');
+    }
+  };
+
   // 1. Check Auth / Onboarding (Auto-Authorize / Guest Mode)
   useEffect(() => {
     let lang = localStorage.getItem('language');
@@ -28,8 +35,6 @@ export default function Home() {
     if (!role) {
       role = 'farmer';
       localStorage.setItem('role', 'farmer');
-      // Optional: We could redirect to /role to let them choose, 
-      // but for "authorized to everyone" we want immediate access.
     }
 
     setCheckingAuth(false);
@@ -81,8 +86,13 @@ export default function Home() {
             <h1 className="text-2xl font-extrabold text-[#1E293B] tracking-tight">Smart Farm</h1>
             <p className="text-sm text-slate-500 font-medium">Your Daily Insight</p>
           </div>
-          <div className="h-10 w-10 bg-green-100 rounded-full flex items-center justify-center text-green-700 font-bold text-lg shadow-sm">
-            {selectedDistrict.name[0]}
+          <div className="flex items-center gap-3">
+            <button onClick={handleLogout} className="h-10 w-10 bg-red-50 rounded-full flex items-center justify-center text-red-500 hover:bg-red-100 transition-colors">
+              <LogOut size={18} />
+            </button>
+            <div className="h-10 w-10 bg-green-100 rounded-full flex items-center justify-center text-green-700 font-bold text-lg shadow-sm">
+              {selectedDistrict.name[0]}
+            </div>
           </div>
         </div>
 
