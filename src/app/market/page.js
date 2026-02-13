@@ -48,7 +48,7 @@ export default function Market() {
     }
 
     // Get available districts for selected state
-    const districts = marketData[selectedState] ? Object.keys(marketData[selectedState]) : [];
+    const districts = (marketData && marketData[selectedState]) ? Object.keys(marketData[selectedState]) : [];
 
     // Filter Logic
     let displayData = [];
@@ -116,7 +116,7 @@ export default function Market() {
                                     onChange={(e) => { setSelectedState(e.target.value); setSelectedDistrict('All'); }}
                                     className="flex-1 bg-slate-50 p-3 rounded-xl border border-slate-100 font-semibold text-slate-700 text-sm outline-none"
                                 >
-                                    {Object.keys(marketData).map(s => <option key={s} value={s}>{s}</option>)}
+                                    {marketData ? Object.keys(marketData).map(s => <option key={s} value={s}>{s}</option>) : null}
                                 </select>
 
                                 <select
@@ -190,7 +190,7 @@ export default function Market() {
                         </div>
 
                         <h3 className="font-bold text-slate-800">Nearby Shops</h3>
-                        {shopsData.map((shop, i) => (
+                        {(shopsData || []).map((shop, i) => (
                             <div key={i} className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
                                 <div className="flex justify-between items-start mb-2">
                                     <div>
