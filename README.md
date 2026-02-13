@@ -25,6 +25,7 @@ graph TD
 **Key Features:**
 - **Scalability:** Serverless architecture (Next.js + Firebase) scales automatically.
 - **Security:** Environment variables for keys, Firebase Auth (ready), Input validation.
+- **Mock Authentication:** OTP flow is currently mocked (Code: 123456) for demonstration purposes.
 - **Low-Bandwidth:** Minimized data transfer, offline-capable PWA potential.
 
 ---
