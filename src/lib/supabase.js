@@ -1,50 +1,24 @@
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY; // Optional: For admin tasks
 
-if (!supabaseUrl || !supabaseAnonKey) {
-    console.warn('Supabase: Missing environment variables. DB features will be disabled.');
-}
+export const supabase = createClient(
+    supabaseUrl || 'https://placeholder.supabase.co',
+    supabaseKey || 'placeholder'
+);
 
-// Helper to validate URL
-const isValidUrl = (urlString) => {
-    try {
-        return Boolean(new URL(urlString));
+export const isSupabaseConfigured = () => {
+    return supabaseUrl &&
+        supabaseKey &&
+        !supabaseUrl.includes('your-supabase-url');
+};
+
+// Admin client (bypasses RLS) - Use carefully in API routes only
+export const getServiceSupabase = () => {
+    if (serviceKey) {
+        return createClient(supabaseUrl, serviceKey);
     }
-    catch (e) {
-        return false;
-    }
-}
-
-const urlToUse = isValidUrl(supabaseUrl) ? supabaseUrl : 'https://placeholder.supabase.co';
-const keyToUse = supabaseAnonKey || 'placeholder';
-
-export const supabase = createClient(urlToUse, keyToUse);
-
-// Helper to check if Supabase is configured
-export const isSupabaseConfigured = () => supabaseUrl && supabaseAnonKey && !supabaseUrl.includes('your-supabase-url');
-
-// Logger helper
-export const logQuery = async (userId, text, language, answer) => {
-    if (!isSupabaseConfigured()) {
-        console.log('Skipping DB Log (Supabase not configured)');
-        return;
-    }
-
-    try {
-        const { error } = await supabase
-            .from('interactions') // We will use a single 'interactions' table for simplicity and scale
-            .insert({
-                user_id: userId,
-                question: text,
-                answer: answer,
-                language: language,
-                created_at: new Date().toISOString()
-            });
-
-        if (error) console.error('Supabase Log Error:', error);
-    } catch (e) {
-        console.error('Supabase Exception:', e);
-    }
+    return null;
 };
