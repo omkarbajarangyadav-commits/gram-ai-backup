@@ -47,7 +47,7 @@ export default function Home() {
       }
     }
     fetchWeather();
-  }, [selectedDistrict]);
+  }, [selectedDistrict, checkingAuth]);
 
   const handleDistrictChange = (e) => {
     const districtName = e.target.value;
