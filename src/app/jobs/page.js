@@ -29,6 +29,27 @@ const MOCK_JOBS = [
 
 export default function Jobs() {
     const [activeTab, setActiveTab] = useState('find'); // 'find' or 'post'
+    const [jobs, setJobs] = useState(MOCK_JOBS);
+    const [showForm, setShowForm] = useState(false);
+    const [newJob, setNewJob] = useState({ title: '', location: '', wage: '', phone: '' });
+
+    const handleAddJob = (e) => {
+        e.preventDefault();
+        const job = {
+            id: Date.now(),
+            title: newJob.title,
+            farmer: 'You (Farmer)',
+            location: newJob.location,
+            wage: `₹${newJob.wage}`,
+            type: 'Daily Wage',
+            posted: 'Just now',
+            phone: newJob.phone
+        };
+        setJobs([job, ...jobs]);
+        setShowForm(false);
+        setActiveTab('find');
+        setNewJob({ title: '', location: '', wage: '', phone: '' });
+    };
 
     return (
         <main className="min-h-screen bg-slate-50 pb-24">
@@ -64,7 +85,7 @@ export default function Jobs() {
             {/* Content */}
             <div className="p-6 space-y-4">
                 {activeTab === 'find' ? (
-                    MOCK_JOBS.map((job) => (
+                    jobs.map((job) => (
                         <div key={job.id} className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
                             <div className="flex justify-between items-start mb-3">
                                 <div>
@@ -99,16 +120,90 @@ export default function Jobs() {
                         </div>
                     ))
                 ) : (
-                    <div className="text-center py-10">
-                        <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
-                            <Plus size={40} />
+                    !showForm ? (
+                        <div className="text-center py-10">
+                            <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
+                                <Plus size={40} />
+                            </div>
+                            <h3 className="text-lg font-bold text-slate-800 mb-2">Hire Workers</h3>
+                            <p className="text-slate-400 text-sm mb-6 max-w-xs mx-auto">Post a job listing to find reliable agriculture workers in your area.</p>
+                            <button
+                                onClick={() => setShowForm(true)}
+                                className="bg-green-600 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-green-200 active:scale-95 transition-transform"
+                            >
+                                Create Job Post
+                            </button>
                         </div>
-                        <h3 className="text-lg font-bold text-slate-800 mb-2">Hire Workers</h3>
-                        <p className="text-slate-400 text-sm mb-6 max-w-xs mx-auto">Post a job listing to find reliable agriculture workers in your area.</p>
-                        <button className="bg-green-600 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-green-200">
-                            Create Job Post
-                        </button>
-                    </div>
+                    ) : (
+                        <form onSubmit={handleAddJob} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-4">
+                            <h3 className="text-lg font-bold text-slate-800 mb-2">New Job Post</h3>
+
+                            <div>
+                                <label className="text-xs font-bold text-slate-500 uppercase">Job Title</label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={newJob.title}
+                                    onChange={(e) => setNewJob({ ...newJob, title: e.target.value })}
+                                    className="w-full bg-slate-50 border border-slate-100 rounded-xl p-3 font-semibold outline-none focus:border-green-500"
+                                    placeholder="e.g. Cotton Picking"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="text-xs font-bold text-slate-500 uppercase">Location</label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={newJob.location}
+                                    onChange={(e) => setNewJob({ ...newJob, location: e.target.value })}
+                                    className="w-full bg-slate-50 border border-slate-100 rounded-xl p-3 font-semibold outline-none focus:border-green-500"
+                                    placeholder="e.g. Akola, MH"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-xs font-bold text-slate-500 uppercase">Daily Wage (₹)</label>
+                                    <input
+                                        type="number"
+                                        required
+                                        value={newJob.wage}
+                                        onChange={(e) => setNewJob({ ...newJob, wage: e.target.value })}
+                                        className="w-full bg-slate-50 border border-slate-100 rounded-xl p-3 font-semibold outline-none focus:border-green-500"
+                                        placeholder="500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-xs font-bold text-slate-500 uppercase">Phone</label>
+                                    <input
+                                        type="tel"
+                                        required
+                                        value={newJob.phone}
+                                        onChange={(e) => setNewJob({ ...newJob, phone: e.target.value })}
+                                        className="w-full bg-slate-50 border border-slate-100 rounded-xl p-3 font-semibold outline-none focus:border-green-500"
+                                        placeholder="987..."
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex gap-3 pt-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowForm(false)}
+                                    className="flex-1 bg-slate-100 text-slate-600 py-3 rounded-xl font-bold"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold shadow-lg shadow-green-200"
+                                >
+                                    Post Job
+                                </button>
+                            </div>
+                        </form>
+                    )
                 )}
             </div>
 

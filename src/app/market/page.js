@@ -1,76 +1,57 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { TrendingUp, TrendingDown, MapPin, Filter, ShoppingBag, Store } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 
-// Pan-India Mock Data (Simulating an API)
-const ALL_INDIA_DATA = {
-    'Maharashtra': {
-        'Solapur': [
-            { crop: 'Onion', price: '₹1,200', trend: 'up', location: 'Solapur APMC' },
-            { crop: 'Maize', price: '₹1,850', trend: 'stable', location: 'Barshi APMC' }
-        ],
-        'Latur': [
-            { crop: 'Soyabean', price: '₹4,550', trend: 'stable', location: 'Latur APMC' },
-            { crop: 'Tur (Arhar)', price: '₹7,200', trend: 'up', location: 'Latur APMC' }
-        ],
-        'Pune': [
-            { crop: 'Tomato', price: '₹850', trend: 'down', location: 'Pune APMC' },
-            { crop: 'Potato', price: '₹1,100', trend: 'stable', location: 'Manchar APMC' }
-        ],
-        'Akola': [
-            { crop: 'Cotton (Kapas)', price: '₹6,900', trend: 'up', location: 'Akola APMC' }
-        ]
-    },
-    'Karnataka': {
-        'Belagavi': [
-            { crop: 'Sugarcane', price: '₹2,900', trend: 'up', location: 'Belagavi APMC' },
-            { crop: 'Maize', price: '₹2,100', trend: 'up', location: 'Gokak APMC' }
-        ],
-        'Hubballi': [
-            { crop: 'Cotton', price: '₹7,100', trend: 'stable', location: 'Hubli APMC' },
-            { crop: 'Groundnut', price: '₹5,600', trend: 'down', location: 'Dharwad APMC' }
-        ]
-    },
-    'Madhya Pradesh': {
-        'Indore': [
-            { crop: 'Soyabean', price: '₹4,400', trend: 'down', location: 'Indore Mandi' },
-            { crop: 'Wheat', price: '₹2,350', trend: 'stable', location: 'Sanwer Mandi' }
-        ],
-        'Ujjain': [
-            { crop: 'Gram (Chana)', price: '₹5,100', trend: 'up', location: 'Ujjain Mandi' }
-        ]
-    },
-    'Punjab': {
-        'Ludhiana': [
-            { crop: 'Wheat', price: '₹2,275', trend: 'stable', location: 'Khanna Mandi' },
-            { crop: 'Rice (Basmati)', price: '₹3,800', trend: 'up', location: 'Sahnewal Mandi' }
-        ]
-    }
-};
 
-const SHOPS_DATA = [
-    { name: 'Kisan Agro Center', type: 'Fertilizers', location: 'Pune', phone: '9876543210' },
-    { name: 'Samarth Seeds', type: 'Seeds', location: 'Pune', phone: '9123456789' },
-    { name: 'Laxmi Krishi Kendra', type: 'Tools', location: 'Solapur', phone: '9988776655' }
-];
+
 
 export default function Market() {
+    const [marketData, setMarketData] = useState({});
+    const [shopsData, setShopsData] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [selectedState, setSelectedState] = useState('Maharashtra');
     const [selectedDistrict, setSelectedDistrict] = useState('All');
     const [activeTab, setActiveTab] = useState('rates'); // 'rates' or 'shops'
 
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch('/api/market');
+                if (!response.ok) throw new Error('Failed to fetch data');
+                const data = await response.json();
+                setMarketData(data.marketData);
+                setShopsData(data.shops);
+            } catch (error) {
+                console.error('Error fetching market data:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    // Loading State
+    if (loading) {
+        return (
+            <main className="min-h-screen bg-slate-50 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+            </main>
+        );
+    }
+
     // Get available districts for selected state
-    const districts = ALL_INDIA_DATA[selectedState] ? Object.keys(ALL_INDIA_DATA[selectedState]) : [];
+    const districts = marketData[selectedState] ? Object.keys(marketData[selectedState]) : [];
 
     // Filter Logic
     let displayData = [];
-    if (ALL_INDIA_DATA[selectedState]) {
+    if (marketData[selectedState]) {
         if (selectedDistrict === 'All') {
             // Flatten all districts
-            Object.values(ALL_INDIA_DATA[selectedState]).forEach(arr => displayData.push(...arr));
+            Object.values(marketData[selectedState]).forEach(arr => displayData.push(...arr));
         } else {
-            displayData = ALL_INDIA_DATA[selectedState][selectedDistrict] || [];
+            displayData = marketData[selectedState][selectedDistrict] || [];
         }
     }
 
@@ -119,7 +100,7 @@ export default function Market() {
                                     onChange={(e) => { setSelectedState(e.target.value); setSelectedDistrict('All'); }}
                                     className="flex-1 bg-slate-50 p-3 rounded-xl border border-slate-100 font-semibold text-slate-700 text-sm outline-none"
                                 >
-                                    {Object.keys(ALL_INDIA_DATA).map(s => <option key={s} value={s}>{s}</option>)}
+                                    {Object.keys(marketData).map(s => <option key={s} value={s}>{s}</option>)}
                                 </select>
 
                                 <select
@@ -188,7 +169,7 @@ export default function Market() {
                         </div>
 
                         <h3 className="font-bold text-slate-800">Nearby Shops</h3>
-                        {SHOPS_DATA.map((shop, i) => (
+                        {shopsData.map((shop, i) => (
                             <div key={i} className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
                                 <div className="flex justify-between items-start mb-2">
                                     <div>

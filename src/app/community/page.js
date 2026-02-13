@@ -1,31 +1,39 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MessageCircle, ThumbsUp, Share2, Search, Plus } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 
+
+
 export default function Community() {
-    const [posts, setPosts] = useState([
-        {
-            id: 1,
-            user: 'Ramesh Patil',
-            crop: 'Cotton',
-            question: 'Why are my cotton leaves turning yellow?',
-            image: 'https://images.unsplash.com/photo-1605000797499-95a51c5269ae?w=500&q=80',
-            likes: 24,
-            answers: 5,
-            expertAnswer: 'Nitrogen deficiency. Apply Urea.'
-        },
-        {
-            id: 2,
-            user: 'Suresh Deshmukh',
-            crop: 'Tomato',
-            question: 'Black spots on tomato fruits. What can be the reason?',
-            image: 'https://images.unsplash.com/photo-1592878904946-b3cd8ae243d9?w=500&q=80',
-            likes: 12,
-            answers: 2,
-            expertAnswer: null
-        }
-    ]);
+    const [posts, setPosts] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchPosts = async () => {
+            try {
+                const response = await fetch('/api/community');
+                if (!response.ok) throw new Error('Failed to fetch posts');
+                const data = await response.json();
+                setPosts(data.posts);
+            } catch (error) {
+                console.error('Error fetching community posts:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchPosts();
+    }, []);
+
+    // Loading State
+    if (loading) {
+        return (
+            <main className="min-h-screen bg-slate-50 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+            </main>
+        );
+    }
 
     return (
         <main className="min-h-screen bg-slate-50 pb-24">
