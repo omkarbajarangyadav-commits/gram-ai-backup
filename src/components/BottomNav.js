@@ -1,16 +1,16 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Bot, Camera, Users, ShoppingCart, Briefcase } from 'lucide-react';
+import { Home, Camera, Users, ShoppingCart, Briefcase, MapPin } from 'lucide-react';
 
 export default function BottomNav() {
   const pathname = usePathname();
 
   const navItems = [
     { name: 'Home', icon: Home, href: '/' },
-    { name: 'Jobs', icon: Briefcase, href: '/jobs' }, // Replaced Assistant
-    { name: 'Heal', icon: Camera, href: '/doctor', isFab: true }, // Central FAB
-    { name: 'Community', icon: Users, href: '/community' },
+    { name: 'Jobs', icon: Briefcase, href: '/jobs' },
+    { name: 'Radar', icon: MapPin, href: '/radar', isFab: true }, // The new central Hub
+    { name: 'Heal', icon: Camera, href: '/doctor' }, // Moved inward
     { name: 'Market', icon: ShoppingCart, href: '/market' },
   ];
 
@@ -24,13 +24,13 @@ export default function BottomNav() {
             <Link key={item.name} href={item.href} className="relative -top-8 group">
               <div className={`
                  w-16 h-16 rounded-full flex items-center justify-center shadow-xl transition-all duration-500
-                 ${isActive ? 'bg-green-600 scale-110 shadow-green-300 ring-4 ring-green-100' : 'bg-green-500 text-white shadow-green-200 group-hover:scale-110'}
+                 ${isActive ? 'bg-blue-600 scale-110 shadow-blue-300 ring-4 ring-blue-100' : 'bg-slate-800 text-white shadow-slate-200 group-hover:scale-110 group-hover:bg-blue-600'}
                `}>
-                <Camera size={28} className="text-white" strokeWidth={2} />
+                <MapPin size={28} className="text-white" strokeWidth={2.5} />
               </div>
-              <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] font-bold text-green-600 whitespace-nowrap">Heal Crop</span>
+              <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] font-bold text-slate-800 whitespace-nowrap">Live Map</span>
             </Link>
-          )
+          );
         }
 
         return (

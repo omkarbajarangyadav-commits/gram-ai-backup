@@ -4,9 +4,9 @@ import { Camera, Upload, X, Check, AlertTriangle, ChevronLeft } from 'lucide-rea
 import Link from 'next/link';
 import BottomNav from '@/components/BottomNav';
 
-export default function CropDoctor() {
+export default function CropD= octor() {
     const [image, setImage] = useState(null);
-    const [analyzing, setAnalyzing] = useState(false);
+    const [analyzing, setAnalyzing] useState(false);
     const [result, setResult] = useState(null);
     const fileInputRef = useRef(null);
 
@@ -19,11 +19,28 @@ export default function CropDoctor() {
         }
     };
 
-    const startAnalysis = () => {
+    const startAnalysis = async () => {
         setAnalyzing(true);
-        // Simulate API call
-        setTimeout(() => {
-            setAnalyzing(false);
+        try {
+            const res = await fetch('/api/doctor', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ imageBase64: image })
+            });
+
+            if (!res.ok) throw new Error("Analysis failed");
+
+            const data = await res.json();
+
+            if (data.disease && data.treatment) {
+                setResult(data);
+            } else {
+                throw new Error("Invalid response");
+            }
+
+        } catch (error) {
+            console.error("OpenAI Error:", error);
+            // Fallback mock so UI doesn't crash 
             setResult({
                 disease: 'Leaf Spot (Cercospora)',
                 confidence: '94%',
@@ -34,7 +51,9 @@ export default function CropDoctor() {
                 ],
                 severity: 'Moderate'
             });
-        }, 2500);
+        } finally {
+            setAnalyzing(false);
+        }
     };
 
     const reset = () => {

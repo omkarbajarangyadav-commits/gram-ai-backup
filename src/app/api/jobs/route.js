@@ -1,105 +1,106 @@
 import { NextResponse } from 'next/server';
-import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase/server';
+import { jobSchema } from '@/lib/validations';
+import { rateLimit } from '@/lib/rateLimit';
 
-// Mock Data as Fallback
-const MOCK_JOBS = [
-    {
-        id: 1,
-        title: 'Cotton Picking Labor Needed',
-        employer: 'Rajesh Patil',
-        location: 'Akola, MH',
-        wage: 450,
-        type: 'Daily',
-        tags: ['Harvesting', 'Urgent']
-    },
-    {
-        id: 2,
-        title: 'Tractor Driver Required',
-        employer: 'Kisan Agro Farm',
-        location: 'Pune, MH',
-        wage: 600,
-        type: 'Daily',
-        tags: ['Driving', 'Machinery']
-    }
-];
-
-export async function GET() {
-    // 1. Try Real DB
-    if (isSupabaseConfigured()) {
-        try {
-            const { data, error } = await supabase
-                .from('jobs')
-                .select('*')
-                .order('created_at', { ascending: false });
-
-            if (!error && data && data.length > 0) {
-                return NextResponse.json({ jobs: data, source: 'database' });
-            }
-        } catch (e) {
-            console.error('Supabase Fetch Error:', e);
+export async function GET(request) {
+    try {
+        const isAllowed = await rateLimit(request);
+        if (!isAllowed) {
+            return NextResponse.json({ error: "Too many requests" }, { status: 429 });
         }
-    }
 
-    // 2. Fallback to Mock
-    return NextResponse.json({ jobs: MOCK_JOBS, source: 'mock' });
+        const { searchParams } = new URL(request.url);
+        const page = parseInt(searchParams.get('page') || '1');
+        const limit = parseInt(searchParams.get('limit') || '10');
+        const location = searchParams.get('location');
+        const category = searchParams.get('category');
+        const search = searchParams.get('search');
+        const offset = (page - 1) * limit;
+
+        const supabase = createClient();
+
+        let query = supabase
+            .from('jobs')
+            .select('*', { count: 'exact' })
+            .eq('status', 'active')
+            .order('created_at', { ascending: false });
+
+        // Performance/Filtering features
+        if (location) query = query.ilike('location', `%${location}%`);
+        if (category) query = query.eq('category', category);
+        if (search) query = query.ilike('title', `%${search}%`);
+
+        query = query.range(offset, offset + limit - 1);
+
+        const { data: jobs, count, error } = await query;
+
+        if (error) throw error;
+
+        return NextResponse.json({ jobs, total: count, page, pages: Math.ceil(count / limit) });
+    } catch (error) {
+        console.error('Jobs GET Error:', error);
+        return NextResponse.json({ error: "Failed to fetch jobs" }, { status: 500 });
+    }
 }
 
 export async function POST(request) {
     try {
-        const body = await request.json();
-
-        // Validation
-        if (!body.title || !body.wage) {
-            return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+        const isAllowed = await rateLimit(request);
+        if (!isAllowed) {
+            return NextResponse.json({ error: "Too many requests" }, { status: 429 });
         }
 
-        // 1. Try Real DB
-        if (isSupabaseConfigured()) {
-            // Note: In a real app with Auth, we would use the user's ID.
-            // For now, we might face RLS issues if not logged in via Supabase Auth.
-            // We will attempt insertion.
+        const supabase = createClient();
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-            // To make this work with the provided schema (which requires employer_id),
-            // we'd typically need a real profile. 
-            // For this 'Guest' demo, we might fail here if we don't have a valid UUID.
+        if (authError || !user) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
 
-            // Simplified: return success with a note if we can't write key
-            const { data, error } = await supabase
-                .from('jobs')
-                .insert([
-                    {
-                        title: body.title,
-                        wage_per_day: body.wage,
-                        location: body.location,
-                        description: body.description,
-                        // Using a dummy UUID for demo if the schema requires it. 
-                        // The user MUST create a profile with this ID in Supabase for this to work strictly,
-                        // or we rely on the schema allowing NULL details if we relaxed it.
-                        // Assuming the schema from step 1 is strict:
-                        employer_id: '00000000-0000-0000-0000-000000000000', // Demo ID
-                        status: 'open'
-                    }
-                ])
-                .select();
+        const body = await request.json();
 
-            if (!error) {
-                return NextResponse.json({ success: true, job: data[0], source: 'database' });
-            } else {
-                console.error('Supabase Insert Error (likely RLS or FK):', error);
-                // Fallthrough to mock success
+        // Server-side input validation
+        const parsedData = jobSchema.safeParse(body);
+        if (!parsedData.success) {
+            return NextResponse.json({ error: parsedData.error.errors }, { status: 400 });
+        }
+
+        const jobData = {
+            ...parsedData.data,
+            user_id: user.id
+        };
+
+        const { data, error } = await supabase
+            .from('jobs')
+            .insert([jobData])
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        // ==========================================
+        // AI AUTO-MATCHING ENGINE DISPATCH TRIGGER
+        // ==========================================
+        if (jobData.latitude && jobData.longitude) {
+            // Run the highly optimized C-level PostGIS scoring algorithm
+            const { data: matchedWorkers, error: matchError } = await supabase.rpc('match_workers_to_job', {
+                job_lat: jobData.latitude,
+                job_lon: jobData.longitude,
+                max_radius: 5000, // Search within 5KM
+                limit_matches: 5 // Get Top 5 best workers instantly
+            });
+
+            if (!matchError && matchedWorkers?.length > 0) {
+                // Here we would push to WebSockets, WhatsApp Cloud API, or Firebase push notifications
+                console.log(`[AI DISPATCH]: Found ${matchedWorkers.length} elite workers for Job ${data.id}. Firing WhatsApp Alerts...`);
+                // e.g. sendWhatsAppJobAlerts(matchedWorkers, data);
             }
         }
 
-        // 2. Mock Success (Simulate persistence)
-        const newJob = {
-            id: Date.now(),
-            ...body,
-            tags: ['New']
-        };
-
-        return NextResponse.json({ success: true, job: newJob, source: 'mock' });
-
+        return NextResponse.json(data, { status: 201 });
     } catch (error) {
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+        console.error('Jobs POST Error:', error);
+        return NextResponse.json({ error: "Failed to create job" }, { status: 500 });
     }
 }

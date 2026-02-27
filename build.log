@@ -1,0 +1,28 @@
+
+> smart-farm@0.1.0 build
+> next build
+
+▲ Next.js 16.1.6 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 10.0s
+  Running TypeScript ...
+  Collecting page data using 7 workers ...
+Error: Invalid supabaseUrl: Must be a valid HTTP or HTTPS URL.
+    at <unknown> (C:\Users\omkar\OneDrive\Desktop\gram-ai-backup\.next\server\chunks\src_lib_supabase_1e1244be.js:37:43509)
+    at new rs (C:\Users\omkar\OneDrive\Desktop\gram-ai-backup\.next\server\chunks\src_lib_supabase_1e1244be.js:37:43691)
+    at module evaluation (C:\Users\omkar\OneDrive\Desktop\gram-ai-backup\.next\server\chunks\src_lib_supabase_1e1244be.js:37:48113)
+    at instantiateModule (C:\Users\omkar\OneDrive\Desktop\gram-ai-backup\.next\server\chunks\[turbopack]_runtime.js:740:9)
+    at getOrInstantiateModuleFromParent (C:\Users\omkar\OneDrive\Desktop\gram-ai-backup\.next\server\chunks\[turbopack]_runtime.js:763:12)
+    at Context.esmImport [as i] (C:\Users\omkar\OneDrive\Desktop\gram-ai-backup\.next\server\chunks\[turbopack]_runtime.js:228:20)
+    at module evaluation (C:\Users\omkar\OneDrive\Desktop\gram-ai-backup\.next\server\chunks\[root-of-the-server]__e65f6590._.js:1:3171)
+    at instantiateModule (C:\Users\omkar\OneDrive\Desktop\gram-ai-backup\.next\server\chunks\[turbopack]_runtime.js:740:9)
+    at instantiateRuntimeModule (C:\Users\omkar\OneDrive\Desktop\gram-ai-backup\.next\server\chunks\[turbopack]_runtime.js:768:12)
+    at getOrInstantiateRuntimeModule (C:\Users\omkar\OneDrive\Desktop\gram-ai-backup\.next\server\chunks\[turbopack]_runtime.js:781:12)
+
+> Build error occurred
+Error: Failed to collect page data for /api/shops
+    at ignore-listed frames {
+  type: 'Error'
+}

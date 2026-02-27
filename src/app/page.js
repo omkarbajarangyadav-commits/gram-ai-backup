@@ -9,6 +9,7 @@ export default function Home() {
   const [weather, setWeather] = useState(null);
   const [userName, setUserName] = useState('Guest');
   const [loading, setLoading] = useState(true);
+  const [marketData, setMarketData] = useState([]);
 
   useEffect(() => {
     // 🔒 AUTHENTICATION CHECK
@@ -32,6 +33,13 @@ export default function Home() {
       humidity: 62,
       location: 'Pune, MH'
     });
+
+    // Fetch dynamic real-world simulated market data
+    fetch('/api/market-price')
+      .then(res => res.json())
+      .then(data => setMarketData(data))
+      .catch(err => console.error("Market fetch failed:", err));
+
     setLoading(false);
 
   }, [router]);
@@ -102,22 +110,23 @@ export default function Home() {
 
       {/* Quick Actions Grid */}
       <div className="px-6 -mt-8 relative z-20">
-        <div className="bg-white rounded-3xl p-2 shadow-xl shadow-slate-200 border border-slate-100 grid grid-cols-4 gap-2">
+        <div className="bg-white rounded-3xl p-4 shadow-xl shadow-slate-200 border border-slate-100 flex flex-wrap justify-between gap-y-4">
           {[
-            { icon: <Bot size={20} />, label: "Ask AI", color: "bg-purple-100 text-purple-600", link: '/assistant' },
-            { icon: <Store size={20} />, label: "Market", color: "bg-orange-100 text-orange-600", link: '/market' },
-            { icon: <Leaf size={20} />, label: "Heal", color: "bg-green-100 text-green-600", link: '/doctor' },
-            { icon: <BarChart3 size={20} />, label: "Jobs", color: "bg-blue-100 text-blue-600", link: '/jobs' },
+            { icon: <MapPin size={24} />, label: "Radar", color: "bg-blue-100 text-blue-600 shadow-blue-200", link: '/radar' },
+            { icon: <Bot size={24} />, label: "Crop AI", color: "bg-purple-100 text-purple-600 shadow-purple-200", link: '/assistant' },
+            { icon: <Leaf size={24} />, label: "Heal", color: "bg-green-100 text-green-600 shadow-green-200", link: '/doctor' },
+            { icon: <BarChart3 size={24} />, label: "Jobs", color: "bg-teal-100 text-teal-600 shadow-teal-200", link: '/jobs' },
+            { icon: <CloudRain size={24} />, label: "Market", color: "bg-orange-100 text-orange-600 shadow-orange-200", link: '/market' },
           ].map((action, idx) => (
             <button
               key={idx}
               onClick={() => router.push(action.link)}
-              className="flex flex-col items-center gap-2 p-3 rounded-2xl hover:bg-slate-50 transition-colors active:scale-95"
+              className="flex flex-col items-center gap-2 w-[18%] transition-colors active:scale-95 group"
             >
-              <div className={`h-12 w-12 rounded-2xl flex items-center justify-center ${action.color} shadow-sm`}>
+              <div className={`h-14 w-14 rounded-2xl flex items-center justify-center ${action.color} shadow-sm group-hover:scale-110 transition-transform`}>
                 {action.icon}
               </div>
-              <span className="text-[10px] font-bold text-slate-600">{action.label}</span>
+              <span className="text-[11px] font-bold text-slate-700">{action.label}</span>
             </button>
           ))}
         </div>
@@ -131,27 +140,28 @@ export default function Home() {
             See All <ChevronRight size={14} />
           </button>
         </div>
-        <div className="flex gap-3 overflow-x-auto pb-4 hide-scrollbar">
-          {[
-            { crop: 'Soyabean', price: '₹4,850', trend: 'up' },
-            { crop: 'Cotton', price: '₹6,920', trend: 'down' },
-            { crop: 'Onion', price: '₹1,400', trend: 'stable' },
-          ].map((item, i) => (
-            <div key={i} className="min-w-[140px] bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col gap-2">
-              <div className="flex justify-between items-start">
-                <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-lg">🌾</div>
-                <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${item.trend === 'up' ? 'bg-green-50 text-green-600' :
-                    item.trend === 'down' ? 'bg-red-50 text-red-600' : 'bg-slate-50 text-slate-500'
+        <div className="flex gap-3 overflow-x-auto pb-4 hide-scrollbar snap-x snap-mandatory">
+          {marketData.length > 0 ? marketData.map((item, i) => (
+            <div key={i} className="snap-start min-w-[150px] bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col gap-2 relative overflow-hidden group hover:border-green-300 transition-colors">
+              <div className="absolute -right-6 -top-6 w-16 h-16 bg-slate-50 rounded-full group-hover:bg-green-50 transition-colors"></div>
+              <div className="flex justify-between items-start relative z-10">
+                <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center text-xl shadow-inner">
+                  {item.crop === 'Soybean' ? '🌱' : item.crop === 'Cotton' ? '☁️' : item.crop === 'Onion' ? '🧅' : '🌾'}
+                </div>
+                <span className={`text-[11px] font-black px-2 py-1 rounded-lg ${item.trend === 'up' ? 'bg-green-100 text-green-700' :
+                  item.trend === 'down' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600'
                   }`}>
-                  {item.trend === 'up' ? '▲ 2%' : item.trend === 'down' ? '▼ 1%' : '• 0%'}
+                  {item.trend === 'up' ? `▲ ${item.percentage}%` : item.trend === 'down' ? `▼ ${item.percentage}%` : '• 0%'}
                 </span>
               </div>
-              <div>
-                <h3 className="text-sm font-bold text-slate-700">{item.crop}</h3>
-                <p className="text-lg font-extrabold text-slate-900">{item.price}</p>
+              <div className="relative z-10 mt-1">
+                <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest">{item.crop}</h3>
+                <p className="text-xl font-black text-slate-900 tracking-tight">₹{item.price}<span className="text-xs text-slate-400 font-semibold ml-1">/q</span></p>
               </div>
             </div>
-          ))}
+          )) : (
+            <div className="text-sm font-medium text-slate-400 p-4">Analyzing real-time market nodes...</div>
+          )}
         </div>
       </div>
 
